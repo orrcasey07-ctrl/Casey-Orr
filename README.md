@@ -153,7 +153,7 @@ NotenPilot besitzt eine saubere technische Suchmaschinenoptimierung:
 
 ## Qualitäts- und Testergebnisse
 
-Alle 15 im NotenPilot-Bauplan geforderten Qualitäts- und Funktionstests wurden geprüft:
+Die folgende Tabelle ist eine manuelle QA-Checkliste aus dem Projektplan. Sie ist kein Nachweis dafür, dass alle Fälle automatisiert oder in der aktuellen Deployment-Umgebung ausgeführt wurden. Die automatisierten Unit-Tests werden mit `npm test` ausgeführt:
 
 | # | Testfall | Erwartetes Verhalten | Status |
 |---|---|---|---|
