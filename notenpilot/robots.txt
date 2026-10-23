@@ -1,0 +1,7 @@
+# robots.txt für NotenPilot
+# Erlaubt allen Suchmaschinen den Zugriff auf alle öffentlichen Seiten
+User-agent: *
+Allow: /
+
+# Nach Veröffentlichung mit der echten Sitemap-URL ergänzen:
+# Sitemap: https://IHRE-ECHTE-DOMAIN/sitemap.xml

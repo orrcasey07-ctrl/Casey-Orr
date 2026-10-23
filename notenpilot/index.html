@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notendurchschnitt berechnen – Kostenloser Notenrechner | NotenPilot</title>
+    <meta
+      name="description"
+      content="Berechne deinen Notendurchschnitt schnell und kostenlos online. Für Schule und Studium mit einfachem oder gewichtetem Notendurchschnitt. Ohne Anmeldung."
+    />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:title" content="Notendurchschnitt berechnen – NotenPilot" />
+    <meta
+      property="og:description"
+      content="Kostenloser Online-Notenrechner für Schule und Studium. Einfachen und gewichteten Durchschnitt in Sekunden berechnen."
+    />
+    <!-- Vor Veröffentlichung mit der echten Live-Domain ersetzen:
+    <link rel="canonical" href="https://deine-domain.de/" />
+    <meta property="og:url" content="https://deine-domain.de/" />
+    -->
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Notendurchschnitt berechnen – NotenPilot" />
+    <meta
+      name="twitter:description"
+      content="Kostenloser Online-Notenrechner für Schüler und Studierende. Schnell, transparent und barrierearm."
+    />
+
+    <!-- Favicon (Inline SVG - keine externen Anfragen) -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23123B70'%3E%3Cpath d='M22 10v6M2 10l10-5 10 5-10 5z'/%3E%3Cpath d='M6 12v5c3 3 9 3 12 0v-5'/%3E%3C/svg%3E"
+    />
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- Strukturierte Daten (Schema.org WebApplication) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "NotenPilot Notenrechner",
+        "description": "Kostenloses Werkzeug zur präzisen Berechnung des einfachen und gewichteten Notendurchschnitts nach dem deutschen Schulnotensystem.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "All",
+        "inLanguage": "de-DE",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <a href="#notenrechner" class="skip-link">Direkt zum Notenrechner springen</a>
+
+    <!-- Kopfzeile -->
+    <header class="site-header" role="banner">
+      <div class="container header-inner">
+        <a href="index.html" class="logo-link" aria-label="NotenPilot Startseite">
+          <div class="logo-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            </svg>
+          </div>
+          <span class="logo-text">Noten<span>Pilot</span></span>
+        </a>
+
+        <nav class="main-nav" aria-label="Hauptnavigation">
+          <ul>
+            <li><a href="#notenrechner" class="nav-link nav-cta">Zum Notenrechner</a></li>
+            <li><a href="#anleitung" class="nav-link">So funktioniert's</a></li>
+            <li><a href="#notensystem" class="nav-link">Notensystem</a></li>
+            <li><a href="#faq" class="nav-link">FAQ</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hauptbereich -->
+    <main id="main-content">
+      <div class="container">
+        <!-- Hero-Bereich -->
+        <section class="hero" aria-labelledby="hero-heading">
+          <div class="hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            100% kostenlos &amp; ohne Registrierung
+          </div>
+          <h1 id="hero-heading">Notendurchschnitt berechnen</h1>
+          <p class="hero-lead">
+            Berechne deinen Notendurchschnitt kostenlos online. Gib deine Noten ein und erhalte dein
+            Ergebnis in wenigen Sekunden – einfach, schnell und ohne Registrierung.
+          </p>
+          <div class="hero-note">
+            Für das übliche deutsche Schulnotensystem von 1,0 bis 6,0. Andere Bewertungssysteme können abweichen.
+          </div>
+        </section>
+
+        <!-- Rechner-Karte -->
+        <section class="card calculator-card" id="notenrechner" aria-labelledby="calc-heading">
+          <div class="calc-header">
+            <div>
+              <h2 id="calc-heading">Deine Noten eingeben</h2>
+              <p class="calc-description">
+                Trage deine Noten ein. Dezimalkomma (z. B. 2,3) und Punkt (z. B. 2.3) werden beide unterstützt.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gewichtete Berechnung Umschalter -->
+          <div class="toggle-box">
+            <label class="toggle-label" for="weighted-toggle">
+              <input type="checkbox" id="weighted-toggle" class="toggle-input" />
+              <div class="toggle-text">
+                <span class="toggle-title">Gewichtete Berechnung verwenden</span>
+                <span class="toggle-hint">
+                  Aktiviere diese Option, wenn deine Noten unterschiedlich stark zählen (z. B. Hauptfächer doppelt
+                  oder Klausuren stärker als mündliche Leistungen).
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <!-- Formular -->
+          <form id="grade-form" novalidate>
+            <!-- Tabellenkopf Desktop -->
+            <div class="rows-header" aria-hidden="true">
+              <div>Fach (optional)</div>
+              <div>Note * (1,0 - 6,0)</div>
+              <div>Gewichtung</div>
+              <div style="text-align: right;">Aktion</div>
+            </div>
+
+            <!-- Dynamische Zeilen -->
+            <div class="grades-list" id="grades-container" role="group" aria-label="Noteneingabezeilen">
+              <!-- Zeilen werden initial per JavaScript erzeugt -->
+            </div>
+
+            <!-- Werkzeugleiste Buttons -->
+            <div class="calc-actions">
+              <div class="actions-left">
+                <button type="button" id="add-row-btn" class="btn btn-secondary">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  + Weitere Note hinzufügen
+                </button>
+                <button type="button" id="load-example-btn" class="btn btn-ghost" title="Typisches Notenbeispiel einfügen">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  Beispiel laden
+                </button>
+              </div>
+
+              <div class="actions-right">
+                <button type="button" id="reset-btn" class="btn btn-ghost">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                  </svg>
+                  Zurücksetzen
+                </button>
+                <button type="submit" id="calc-btn" class="btn btn-primary">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                    <line x1="8" y1="6" x2="16" y2="6"></line>
+                    <line x1="16" y1="14" x2="16" y2="18"></line>
+                    <path d="M16 10h.01"></path>
+                    <path d="M12 10h.01"></path>
+                    <path d="M8 10h.01"></path>
+                    <path d="M12 14h.01"></path>
+                    <path d="M8 14h.01"></path>
+                    <path d="M12 18h.01"></path>
+                    <path d="M8 18h.01"></path>
+                  </svg>
+                  Durchschnitt berechnen
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Fehlermeldungen Box (Barrierearm mit role="alert") -->
+          <div
+            id="error-container"
+            class="alert-box"
+            role="alert"
+            aria-live="assertive"
+            tabindex="-1"
+            hidden
+          >
+            <div class="alert-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Bitte korrigiere folgende Eingaben:
+            </div>
+            <ul id="error-list" class="alert-list"></ul>
+          </div>
+
+          <!-- Hinweis bei veraltetem Ergebnis nach Eingabeänderung -->
+          <div id="stale-notice" class="stale-notice" role="status" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Deine Eingaben wurden verändert. Klicke auf „Durchschnitt berechnen“, um das Ergebnis zu aktualisieren.
+          </div>
+
+          <!-- Ergebnisbereich -->
+          <div
+            id="result-card"
+            class="result-card"
+            role="region"
+            aria-labelledby="result-heading"
+            aria-live="polite"
+            hidden
+          >
+            <div class="result-header">
+              <h3 id="result-heading" class="result-title">Dein Notendurchschnitt</h3>
+              <div id="result-badge" class="result-badge">Gut</div>
+            </div>
+
+            <div class="result-body">
+              <div id="result-number" class="result-number">0,00</div>
+            </div>
+
+            <div id="result-meta-chips" class="result-meta-chips"></div>
+
+            <div id="result-breakdown-container"></div>
+
+            <div class="result-actions">
+              <button type="button" id="copy-result-btn" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Ergebnis kopieren
+              </button>
+              <span id="copy-feedback" class="copy-feedback" hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                In die Zwischenablage kopiert!
+              </span>
+            </div>
+
+            <p class="result-disclaimer">
+              Hinweis: Das Ergebnis dient der Orientierung. Die offizielle Notenberechnung kann je nach Schule,
+              Hochschule oder Prüfungsordnung abweichen (z. B. Rundungsregeln oder Dezimalstellenabschneidung).
+            </p>
+          </div>
+        </section>
+
+        <!-- Vorbereitung Werbeplatzierung (Adsterra / Google AdSense) -->
+        <!-- 
+          HINWEIS FÜR DEN BETREIBER ZUR ANZEIGEN-EINBINDUNG (ADSTERRA & ADSENSE):
+          1. Melden Sie sich bei Ihrem Adsterra Publisher-Konto oder Google AdSense-Konto an.
+          2. Erstellen Sie eine Banner-Werbeeinheit (z. B. 728x90 Leaderboard für Desktop, 300x250 Medium Rectangle für Mobilgeräte).
+          3. Ersetzen Sie den Inhalt innerhalb von <div class="ad-slot-placeholder-content"> durch den von Ihrem Dashboard bereitgestellten Code.
+          4. Bis dahin bleibt dieser Bereich deaktiviert und zeigt nur den unaufdringlichen Platzhalter an.
+          5. DSGVO-Hinweis: Vor Aktivierung von Drittanbieter-Werbung in der EU ist ein rechtlich geprüfter Consent-Banner erforderlich.
+        -->
+        <aside class="ad-slot-wrapper" aria-label="Werbebereich">
+          <span class="ad-slot-label">Anzeige</span>
+          <div class="ad-slot-placeholder-content">
+            <p><strong>Werbeplatzhalter (Vorbereitet für Adsterra / Google AdSense)</strong></p>
+            <small>Fügen Sie hier nach Freigabe Ihren offiziellen Publisher-Code (z. B. 728×90 oder 300×250 Banner) ein.</small>
+          </div>
+        </aside>
+
+        <!-- Informationsbereich mit originellen deutschen Texten -->
+        <section class="content-section" id="anleitung" aria-labelledby="info-heading">
+          <div class="section-intro">
+            <h2 id="info-heading">Wie berechnet man den Notendurchschnitt?</h2>
+            <p>
+              Erfahre, wie der einfache und der gewichtete Notenschnitt berechnet werden und worauf es ankommt.
+            </p>
+          </div>
+
+          <div class="info-grid">
+            <!-- Karte 1: Einfacher Schnitt -->
+            <article class="info-card">
+              <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Einfachen Notendurchschnitt berechnen
+              </h3>
+              <p>
+                Beim einfachen arithmetischen Mittel zählen alle Fächer oder Prüfungen gleich viel.
+                Du addierst alle deine Noten zusammen und teilst das Ergebnis durch die Gesamtzahl der Noten.
+              </p>
+              <div class="formula-box">Durchschnitt = Summe aller Noten / Anzahl der Noten</div>
+              <div class="example-box">
+                <strong>Beispiel:</strong> Du hast die Noten <strong>2,0</strong>, <strong>1,0</strong> und <strong>3,0</strong> erhalten.<br />
+                Rechnung: (2,0 + 1,0 + 3,0) / 3 = 6,0 / 3 = <strong>2,00</strong>.
+              </div>
+            </article>
+
+            <!-- Karte 2: Gewichteter Schnitt -->
+            <article class="info-card">
+              <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3v18"></path>
+                  <rect x="4" y="7" width="16" height="5" rx="1"></rect>
+                  <circle cx="8" cy="17" r="2"></circle>
+                  <circle cx="16" cy="17" r="2"></circle>
+                </svg>
+                Gewichteten Notendurchschnitt berechnen
+              </h3>
+              <p>
+                In vielen Schulen und Universitäten haben manche Leistungen ein größeres Gewicht – zum Beispiel
+                Hauptfächer doppelt oder schriftliche Klausuren zu 60 % und mündliche Mitarbeit zu 40 %.
+              </p>
+              <div class="formula-box">Gewichteter Schnitt = Summe(Note × Gewichtung) / Summe aller Gewichtungen</div>
+              <div class="example-box">
+                <strong>Beispiel:</strong> Note <strong>2,0</strong> mit Gewichtung 2 (z. B. Klausur) und Note <strong>3,0</strong> mit Gewichtung 1 (mündlich):<br />
+                Rechnung: (2,0 × 2 + 3,0 × 1) / (2 + 1) = (4,0 + 3,0) / 3 = 7,0 / 3 = <strong>2,33</strong>.
+              </div>
+            </article>
+
+            <!-- Karte 3: Notensystem -->
+            <article class="info-card" id="notensystem">
+              <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Das deutsche Schulnotensystem
+              </h3>
+              <p>
+                In Deutschland wird an den meisten allgemeinbildenden Schulen die 6-stufige Notenskala verwendet:
+              </p>
+              <div class="table-responsive">
+                <table class="grading-table" aria-label="Deutsche Notenstufen">
+                  <thead>
+                    <tr>
+                      <th>Stufe</th>
+                      <th>Bezeichnung</th>
+                      <th>Bedeutung</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="grade-pill gp-1">1</span></td>
+                      <td>Sehr gut</td>
+                      <td>Leistung entspricht den Anforderungen in besonderem Maße</td>
+                    </tr>
+                    <tr>
+                      <td><span class="grade-pill gp-2">2</span></td>
+                      <td>Gut</td>
+                      <td>Leistung entspricht den Anforderungen voll</td>
+                    </tr>
+                    <tr>
+                      <td><span class="grade-pill gp-3">3</span></td>
+                      <td>Befriedigend</td>
+                      <td>Leistung entspricht den Anforderungen im Allgemeinen</td>
+                    </tr>
+                    <tr>
+                      <td><span class="grade-pill gp-4">4</span></td>
+                      <td>Ausreichend</td>
+                      <td>Leistung weist Mängel auf, genügt aber im Ganzen noch</td>
+                    </tr>
+                    <tr>
+                      <td><span class="grade-pill gp-5">5</span></td>
+                      <td>Mangelhaft</td>
+                      <td>Leistung entspricht den Anforderungen nicht, Grundkenntnisse vorhanden</td>
+                    </tr>
+                    <tr>
+                      <td><span class="grade-pill gp-6">6</span></td>
+                      <td>Ungenügend</td>
+                      <td>Grundkenntnisse lückenhaft, Anforderungen nicht erfüllt</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="margin-top: 10px; font-size: 0.85rem; color: #64748b;">
+                Hinweis: In der gymnasialen Oberstufe (MSS/Kurssystem) werden meist Punkte von 0 bis 15 vergeben,
+                an Universitäten teils ECTS-Punkte.
+              </p>
+            </article>
+
+            <!-- Karte 4: Kostenlos & Datenschutz -->
+            <article class="info-card">
+              <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                Kostenlos &amp; lokal im Browser
+              </h3>
+              <p>
+                <strong>Ist der Notenrechner kostenlos?</strong><br />
+                Ja, NotenPilot ist zu 100 % kostenlos und ohne jegliche Registrierung nutzbar. Es gibt kein Abo
+                und keine versteckten Kosten.
+              </p>
+              <p>
+                <strong>Werden meine Noten gespeichert?</strong><br />
+                Nein. Alle Berechnungen finden ausnahmslos direkt in deinem Browser auf deinem eigenen Gerät statt.
+                Deine eingegebenen Noten werden zu keinem Zeitpunkt an einen Server übermittelt oder in einer Datenbank gespeichert.
+                Der Hosting-Anbieter verarbeitet lediglich rein technische Serververbindungsprotokolle zur Bereitstellung der Website.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- FAQ-Bereich -->
+        <section class="faq-section" id="faq" aria-labelledby="faq-heading">
+          <div class="section-intro">
+            <h2 id="faq-heading">Häufig gestellte Fragen (FAQ)</h2>
+            <p>Antworten auf die wichtigsten Fragen rund um den Notenrechner und die Notenberechnung.</p>
+          </div>
+
+          <div class="faq-list">
+            <details class="faq-item">
+              <summary class="faq-summary">Kann ich Kommanoten eingeben?</summary>
+              <div class="faq-content">
+                Ja, du kannst Kommanoten sowohl mit einem Dezimalkomma (z. B. <code>1,7</code> oder <code>2,3</code>)
+                als auch mit einem Dezimalpunkt (z. B. <code>1.7</code> oder <code>2.3</code>) eingeben. Der Rechner
+                erkennt beide Formate automatisch.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-summary">Was bedeutet eine gewichtete Note?</summary>
+              <div class="faq-content">
+                Eine gewichtete Note bedeutet, dass einzelne Fächer oder Prüfungen stärker in den Gesamtschnitt
+                einfließen als andere. Ein Fach mit der Gewichtung 2 fließt beispielsweise doppelt so stark ein
+                wie ein Fach mit der Gewichtung 1. Das ist typisch für Hauptfächer, Leistungskurse oder Klausuren im Vergleich zu mündlichen Noten.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-summary">Ist das Ergebnis meine offizielle Abschlussnote?</summary>
+              <div class="faq-content">
+                Nein, das berechnete Ergebnis dient als verlässliche Orientierung. Jede Schule, Hochschule oder
+                Prüfungsordnung besitzt spezifische Verordnungen (z. B. Rundungsvorschriften, das Abschneiden ab der zweiten Nachkommastelle
+                oder Ausschlusskriterien bei bestimmten Unterkursen). Maßgeblich ist immer das offizielle Zeugnis deiner Bildungsstätte.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-summary">Werden meine eingegebenen Noten gespeichert?</summary>
+              <div class="faq-content">
+                Nein. NotenPilot läuft vollständig im Client-Browser deines Endgeräts. Keine Noteneingabe wird
+                an uns oder Dritte übertragen. Wenn du die Seite schließt oder neu lädst, werden die Eingaben zurückgesetzt.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-summary">Funktioniert der Notenrechner auf dem Smartphone?</summary>
+              <div class="faq-content">
+                Ja. NotenPilot wurde im Mobile-First-Design entwickelt und passt sich nahtlos an alle Bildschirmgrößen
+                vom kleinen Smartphone (ab 320 Pixel Breite) über Tablets bis zum Desktop an. Die Tasten und Eingabefelder
+                sind für Fingerbedienung optimiert.
+              </div>
+            </details>
+
+            <details class="faq-item">
+              <summary class="faq-summary">Wie wird bei Zwischennoten gerundet?</summary>
+              <div class="faq-content">
+                NotenPilot rechnet intern mit dem exakten mathematischen Mittelwert und rundet das Endergebnis kaufmännisch
+                auf zwei Nachkommastellen (z. B. 2,3333... wird zu 2,33). Einzelne Zwischenwerte werden nicht vorab gerundet,
+                um Genauigkeit zu gewährleisten.
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Fußzeile -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <h4>NotenPilot</h4>
+            <p>
+              Dein kostenloser Online-Notenrechner für die einfache und präzise Berechnung des Notendurchschnitts in Schule und Studium.
+            </p>
+          </div>
+          <nav class="footer-nav" aria-label="Rechtliche Navigation">
+            <ul>
+              <li><a href="impressum.html">Impressum</a></li>
+              <li><a href="datenschutz.html">Datenschutzerklärung</a></li>
+              <li><a href="kontakt.html">Kontakt</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-bottom">
+          <div>
+            &copy; <span id="current-year">2026</span> NotenPilot. Alle Rechte vorbehalten.
+          </div>
+          <div>
+            Unabhängiges Bildungswerkzeug ohne Gewähr für Prüfungsentscheidungen.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Rechnerlogik -->
+    <script src="./script.js"></script>
+  </body>
+</html>

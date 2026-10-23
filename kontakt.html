@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kontakt (Vorlage) | NotenPilot</title>
+    <meta
+      name="description"
+      content="Kontaktiere das Team von NotenPilot bei Fragen, Feedback oder Anregungen zu unserem kostenlosen Notenrechner."
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23123B70'%3E%3Cpath d='M22 10v6M2 10l10-5 10 5-10 5z'/%3E%3Cpath d='M6 12v5c3 3 9 3 12 0v-5'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Direkt zum Inhalt springen</a>
+
+    <!-- Kopfzeile -->
+    <header class="site-header" role="banner">
+      <div class="container header-inner">
+        <a href="index.html" class="logo-link" aria-label="NotenPilot Startseite">
+          <div class="logo-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            </svg>
+          </div>
+          <span class="logo-text">Noten<span>Pilot</span></span>
+        </a>
+
+        <nav class="main-nav" aria-label="Hauptnavigation">
+          <ul>
+            <li><a href="index.html#notenrechner" class="nav-link nav-cta">Zum Notenrechner</a></li>
+            <li><a href="index.html" class="nav-link">Startseite</a></li>
+            <li><a href="impressum.html" class="nav-link">Impressum</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <div class="container">
+        <div class="page-header">
+          <h1>Kontakt zu NotenPilot</h1>
+          <p>Hast du Fragen, Verbesserungsvorschläge oder Feedback zu unserem Notenrechner?</p>
+        </div>
+
+        <div class="legal-notice-box" role="note">
+          <strong>Hinweis für den Betreiber vor der Veröffentlichung:</strong>
+          Ersetze den Platzhalter <span class="placeholder-tag">[DEINE-KONTAKT-EMAIL@DEINE-DOMAIN.DE]</span>
+          durch deine tatsächliche, erreichbare E-Mail-Adresse. Um Scheinformulare ohne echte Serververarbeitung
+          zu vermeiden, ist hier bewusst ein transparenter direkter E-Mail-Kontakt vorbereitet. Falls du ein Webformular
+          nutzen möchtest, binde einen DSGVO-konformen Dienst (z. B. Formspree oder einen Cloudflare Worker) ein.
+        </div>
+
+        <article class="card legal-content">
+          <h2>So erreichst du uns</h2>
+          <p>
+            Wir freuen uns über Hinweise, Fehlerkorrekturen und Wünsche zu neuen Funktionen.
+            Schreibe uns gerne eine E-Mail an:
+          </p>
+          <p style="font-size: 1.15rem; margin: 16px 0;">
+            ✉️ <strong>E-Mail:</strong>
+            <span class="placeholder-tag">[DEINE-KONTAKT-EMAIL@DEINE-DOMAIN.DE]</span>
+          </p>
+
+          <h2>Häufige Anfragen vorab gelöst</h2>
+          <div class="example-box" style="margin-bottom: 20px;">
+            <p><strong>Frage:</strong> Speichert NotenPilot meine Noten?</p>
+            <p><strong>Antwort:</strong> Nein. Alle Berechnungen laufen lokal auf deinem Gerät im Browser ab. Wir haben keinen Zugriff auf deine eingegebenen Noten.</p>
+          </div>
+
+          <div class="example-box" style="margin-bottom: 20px;">
+            <p><strong>Frage:</strong> Kann NotenPilot auch Oberstufenpunkte (0 bis 15 Punkte) berechnen?</p>
+            <p><strong>Antwort:</strong> Derzeit ist NotenPilot auf das 6-stufige Schulnotensystem von 1,0 bis 6,0 optimiert. Eine Erweiterung für das 15-Punkte-Oberstufensystem befindet sich in Planung.</p>
+          </div>
+
+          <h2>Postanschrift</h2>
+          <p>
+            Die ladungsfähige Anschrift des Betreibers findest du in unserem
+            <a href="impressum.html">Impressum</a>.
+          </p>
+        </article>
+      </div>
+    </main>
+
+    <!-- Fußzeile -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <h4>NotenPilot</h4>
+            <p>Dein kostenloser Online-Notenrechner für Schule und Studium.</p>
+          </div>
+          <nav class="footer-nav" aria-label="Rechtliche Navigation">
+            <ul>
+              <li><a href="index.html">Startseite</a></li>
+              <li><a href="impressum.html">Impressum</a></li>
+              <li><a href="datenschutz.html">Datenschutzerklärung</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-bottom">
+          <div>&copy; <span id="current-year">2026</span> NotenPilot. Alle Rechte vorbehalten.</div>
+          <div>Direkter Kontakt per E-Mail für Anfragen und Feedback.</div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
