@@ -213,6 +213,61 @@ export function calculateGradeAverage(
   };
 }
 
+export interface CalculatedAverageData {
+  average: number;
+  formattedAverage: string;
+  count: number;
+  isWeighted: boolean;
+  totalWeight: number;
+  rating: string;
+  verbalRating: string;
+  breakdown: Array<{
+    subject: string;
+    grade: number;
+    weight: number;
+  }>;
+}
+
+export function calculateAverageResult(
+  items: Array<{ subject: string; grade: number; weight: number }>,
+  isWeighted: boolean
+): CalculatedAverageData {
+  if (!items || items.length === 0) {
+    throw new Error('Bitte füge mindestens eine Notenzeile hinzu.');
+  }
+
+  let weightedSum = 0;
+  let totalWeight = 0;
+
+  for (const item of items) {
+    const w = isWeighted ? item.weight : 1;
+    weightedSum += item.grade * w;
+    totalWeight += w;
+  }
+
+  if (totalWeight <= 0) {
+    throw new Error('Die Gesamtsumme aller Gewichtungen muss größer als 0 sein.');
+  }
+
+  const average = weightedSum / totalWeight;
+  const rating = getGermanVerbalRating(average);
+
+  return {
+    average,
+    formattedAverage: formatGermanNumber(average, 2),
+    count: items.length,
+    isWeighted,
+    totalWeight,
+    rating,
+    verbalRating: rating,
+    breakdown: items.map((i) => ({
+      subject: i.subject,
+      grade: i.grade,
+      weight: isWeighted ? i.weight : 1,
+    })),
+  };
+}
+
 /**
  * Erzeugt einen formatierten Text für die Zwischenablage.
  */
@@ -240,4 +295,81 @@ export function generateClipboardText(result: CalculationResult): string {
 
   lines.push('Berechnet mit NotenPilot (kostenlos online ohne Registrierung).');
   return lines.join('\n');
+}
+
+/**
+ * Konvertiert gymnasiale Oberstufen-Notenpunkte (0 bis 15 Punkte)
+ * in eine Dezimalnote nach offiziellem KMK-Schlüssel.
+ * Formel: Note = (17 - Punkte) / 3
+ */
+export function convertPointsToGrade(points: number): number {
+  if (points <= 0) return 6.0;
+  if (points >= 15) return 0.67; // 1+
+  const note = (17 - points) / 3;
+  return Math.round(note * 100) / 100;
+}
+
+/**
+ * Konvertiert eine Dezimalnote (1,0 bis 6,0) in Oberstufen-Notenpunkte (0 bis 15).
+ */
+export function convertGradeToPoints(grade: number): number {
+  if (grade <= 0.8) return 15;
+  if (grade >= 5.8) return 0;
+  const pts = Math.round(17 - 3 * grade);
+  return Math.max(0, Math.min(15, pts));
+}
+
+/**
+ * Verbale Beurteilung für Oberstufenpunkte
+ */
+export function getOberstufeRating(points: number): string {
+  if (points >= 13) return 'Sehr gut (1)';
+  if (points >= 10) return 'Gut (2)';
+  if (points >= 7) return 'Befriedigend (3)';
+  if (points >= 5) return 'Ausreichend (4, bestanden)';
+  if (points >= 1) return 'Mangelhaft (5, Unterkurs)';
+  return 'Ungenügend (6, 0 Punkte)';
+}
+
+export interface TargetGradeOutcome {
+  neededGrade: number;
+  formattedNeededGrade: string;
+  isRealistic: boolean;
+  message: string;
+}
+
+/**
+ * Berechnet, welche Note in der nächsten Prüfung benötigt wird, um den Wunschschnitt zu erreichen.
+ * Formel: Benötigte Note = ((Ziel * (BisherigesGewicht + NeuesGewicht)) - (AktuellerSchnitt * BisherigesGewicht)) / NeuesGewicht
+ */
+export function calculateTargetGrade(
+  currentAvg: number,
+  currentWeight: number,
+  targetAvg: number,
+  nextExamWeight: number
+): TargetGradeOutcome {
+  const totalWeight = currentWeight + nextExamWeight;
+  const needed = (targetAvg * totalWeight - currentAvg * currentWeight) / nextExamWeight;
+  const rounded = Math.round(needed * 100) / 100;
+
+  let isRealistic = true;
+  let message = `Du benötigst in der nächsten Prüfung eine ${formatGermanNumber(rounded, 2)} oder besser.`;
+
+  if (rounded < 1.0) {
+    isRealistic = false;
+    message = `Selbst mit einer 1,0 erreichst du rechnerisch nur ${(
+      (currentAvg * currentWeight + 1.0 * nextExamWeight) /
+      totalWeight
+    ).toFixed(2).replace('.', ',')}. Der Wunschschnitt ist in einer einzigen Klausur leider nicht mehr möglich.`;
+  } else if (rounded > 6.0) {
+    isRealistic = true;
+    message = `Dein aktueller Schnitt ist so gut, dass du das Ziel selbst mit einer 6,0 erreichst!`;
+  }
+
+  return {
+    neededGrade: rounded,
+    formattedNeededGrade: formatGermanNumber(Math.max(1.0, Math.min(6.0, rounded)), 2),
+    isRealistic,
+    message,
+  };
 }

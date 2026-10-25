@@ -6,3 +6,13 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Lockfiles to ignore (Prevent Cloudflare Pages Bun auto-detection)
+bun.lock
+bun.lockb
+*.lockb
+
+# Local testing and archives
+.playwright-cli/
+*.zip
+notenpilot.zip

@@ -2,5 +2,7 @@
   "name": "NotenPilot",
   "description": "Kostenloser und barrierearmer Online-Notenrechner für Schüler und Studierende zur Berechnung des einfachen und gewichteten Notendurchschnitts.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

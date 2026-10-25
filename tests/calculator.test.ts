@@ -6,6 +6,10 @@ import {
   formatGermanNumber,
   getGermanVerbalRating,
   CalculationResult,
+  convertPointsToGrade,
+  convertGradeToPoints,
+  getOberstufeRating,
+  calculateTargetGrade,
 } from '../src/calculator-core';
 
 test('parseGermanNumber handles commas, dots, whitespace, and invalid strings', () => {
@@ -143,4 +147,33 @@ test('Verbale Notenbeurteilung nach deutschem Schulsystem', () => {
   assert.equal(getGermanVerbalRating(4.0), 'Ausreichend');
   assert.equal(getGermanVerbalRating(4.8), 'Mangelhaft');
   assert.equal(getGermanVerbalRating(5.5), 'Ungenügend');
+});
+
+test('Oberstufe: Konvertierung von Punkten (0-15) in Noten (KMK-Formel)', () => {
+  assert.equal(convertPointsToGrade(15), 0.67);
+  assert.equal(convertPointsToGrade(14), 1.0);
+  assert.equal(convertPointsToGrade(11), 2.0);
+  assert.equal(convertPointsToGrade(5), 4.0);
+  assert.equal(convertPointsToGrade(0), 6.0);
+
+  assert.equal(convertGradeToPoints(1.0), 14);
+  assert.equal(convertGradeToPoints(2.0), 11);
+  assert.equal(convertGradeToPoints(4.0), 5);
+
+  assert.ok(getOberstufeRating(14).includes('Sehr gut'));
+  assert.ok(getOberstufeRating(4).includes('Unterkurs'));
+});
+
+test('Zielnoten-Rechner: Berechnet die benötigte Klausurnote korrekt', () => {
+  // Aktueller Schnitt 2,5 mit Gewicht 3, Ziel 2,0 mit Klausurgewicht 1:
+  // (2,0 * 4 - 2,5 * 3) / 1 = (8 - 7,5) / 1 = 0,5 -> nicht realistisch in 1 Klausur
+  const outcome1 = calculateTargetGrade(2.5, 3, 2.0, 1);
+  assert.equal(outcome1.isRealistic, false);
+
+  // Aktueller Schnitt 2,5 mit Gewicht 1, Ziel 2,0 mit Klausurgewicht 1:
+  // (2,0 * 2 - 2,5 * 1) / 1 = 1,5 -> Note 1,5 benötigt
+  const outcome2 = calculateTargetGrade(2.5, 1, 2.0, 1);
+  assert.equal(outcome2.isRealistic, true);
+  assert.equal(outcome2.neededGrade, 1.5);
+  assert.equal(outcome2.formattedNeededGrade, '1,50');
 });

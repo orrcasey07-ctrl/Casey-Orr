@@ -1,0 +1,6 @@
+{
+  "summary":  "Architectural blueprint and implementation plan to elevate NotenPilot into a full-stack German student platform using React 19, Vite, TypeScript, and Supabase. Covers preserving the existing public grade calculator, adding Supabase Auth, Row Level Security, Student Notes Manager, Subjects & Grade History, Exam & Study Planner, Flashcards with spaced repetition, and Pomodoro Focus Timer with strict German privacy standards and AdSense readiness.",
+  "updatedAt":  "2026-10-23T17:29:39.490157331Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
