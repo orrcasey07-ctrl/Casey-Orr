@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   // Fetch student profile from Supabase
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, email?: string) => {
     if (!isSupabaseConfigured) {
       const stored = localStorage.getItem(`notenpilot_profile_${userId}`);
       if (stored) {
@@ -55,15 +55,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (data && !error) {
+      if (data) {
         setProfile(data as Profile);
-      } else {
+      } else if (!error) {
         // If profile doesn't exist yet, insert a default profile safely
         const newProfile: Partial<Profile> = {
           id: userId,
-          display_name: user?.email ? user.email.split('@')[0] : 'Schüler',
+          display_name: email ? email.split('@')[0] : 'Schüler',
           school_type: 'Gymnasium',
         };
         const { data: created } = await supabase
@@ -88,39 +88,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const parsed = JSON.parse(stored);
           setUser(parsed);
-          fetchProfile(parsed.id);
+          void fetchProfile(parsed.id, parsed.email);
         } catch {
-          // ignore
+          // Ignore invalid local demo-session data.
+          localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
         }
       }
       setLoading(false);
       return;
     }
 
-    // Official Supabase Auth Session Handling
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
-      setLoading(false);
-    });
-
+    // Supabase emits INITIAL_SESSION through this listener. Avoid a parallel
+    // getSession() call so two session initializations cannot race each other.
+    let profileFetchTimer: ReturnType<typeof setTimeout> | undefined;
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+      setProfile(null);
+
+      if (profileFetchTimer) clearTimeout(profileFetchTimer);
+      if (nextSession?.user) {
+        const currentUser = nextSession.user;
+        // Do not run Supabase queries inside onAuthStateChange; doing so can
+        // deadlock the auth lock in some flows.
+        profileFetchTimer = setTimeout(() => {
+          void fetchProfile(currentUser.id, currentUser.email ?? undefined);
+        }, 0);
       }
+
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (profileFetchTimer) clearTimeout(profileFetchTimer);
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -135,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(mockUser);
       localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(mockUser));
-      await fetchProfile(mockUser.id);
+      await fetchProfile(mockUser.id, email);
       return { error: null };
     }
 
