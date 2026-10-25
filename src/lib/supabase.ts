@@ -93,17 +93,17 @@ export interface StudySession {
 }
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jfbcknzaqskuyrlhakoi.supabase.co';
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YOR2ryfjt64yZn9V2gLa6A_ir4Z4PMj';
 
 // Validate if a genuine public key is provided (not empty or default placeholder)
 export const isSupabaseConfigured = Boolean(
   supabasePublishableKey &&
-  supabasePublishableKey !== 'your-anon-publishable-key-here' &&
+  !supabasePublishableKey.includes('your-anon-publishable-key-here') &&
   supabasePublishableKey.length > 20
 );
 
 // Create the official client if configured, otherwise provide a safe client instance
 export const supabase: SupabaseClient = createClient(
   supabaseUrl,
-  supabasePublishableKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy'
+  supabasePublishableKey
 );
