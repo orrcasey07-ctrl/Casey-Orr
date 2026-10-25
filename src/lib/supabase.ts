@@ -95,11 +95,10 @@ export interface StudySession {
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://jfbcknzaqskuyrlhakoi.supabase.co';
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_YOR2ryfjt64yZn9V2gLa6A_ir4Z4PMj';
 
-// Validate if a genuine public key is provided (not empty or default placeholder)
+// Only treat a real Supabase publishable key as configured; reject .env.example placeholders.
 export const isSupabaseConfigured = Boolean(
-  supabasePublishableKey &&
-  !supabasePublishableKey.includes('your-anon-publishable-key-here') &&
-  supabasePublishableKey.length > 20
+  supabasePublishableKey.startsWith('sb_publishable_') &&
+  !supabasePublishableKey.includes('your-project-publishable-key')
 );
 
 // Create the official client if configured, otherwise provide a safe client instance
