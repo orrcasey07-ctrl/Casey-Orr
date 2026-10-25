@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar, ActiveTab } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { GradeCalculator } from './components/GradeCalculator';
@@ -17,7 +17,10 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
+const PROTECTED_TABS: ActiveTab[] = ['dashboard', 'notes', 'subjects', 'planner', 'flashcards'];
+
 const AppContent: React.FC = () => {
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>('calculator');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalInitialMode, setAuthModalInitialMode] = useState<'login' | 'signup'>('login');
@@ -28,9 +31,20 @@ const AppContent: React.FC = () => {
   };
 
   const handleNavigateTab = (tab: ActiveTab) => {
+    if (PROTECTED_TABS.includes(tab) && authLoading) return;
+    if (PROTECTED_TABS.includes(tab) && !user) {
+      openAuth('login');
+      return;
+    }
     setActiveTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (!authLoading && !user && PROTECTED_TABS.includes(activeTab)) {
+      setActiveTab('calculator');
+    }
+  }, [activeTab, authLoading, user]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200">
