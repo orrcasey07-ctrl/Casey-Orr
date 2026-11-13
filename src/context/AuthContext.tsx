@@ -19,6 +19,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_STORAGE_KEY_USER = 'notenpilot_demo_user';
 
+// Deterministic hash for demo accounts so different local demo logins don't mix data
+const generateDemoUserId = (email: string): string => {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    hash = (hash << 5) - hash + email.charCodeAt(i);
+    hash |= 0;
+  }
+  return `demo_${Math.abs(hash).toString(36)}`;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -59,24 +69,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (data && !error) {
         setProfile(data as Profile);
-      } else {
-        // If profile doesn't exist yet, insert a default profile safely
+      } else if (error && (error.code === 'PGRST116' || error.message?.includes('0 rows'))) {
+        // Only if profile does not exist yet (PGRST116 = 0 rows), insert a default profile safely
         const newProfile: Partial<Profile> = {
           id: userId,
           display_name: user?.email ? user.email.split('@')[0] : 'Schüler',
           school_type: 'Gymnasium',
         };
-        const { data: created } = await supabase
+        const { data: created, error: createError } = await supabase
           .from('profiles')
           .insert(newProfile)
           .select()
           .single();
-        if (created) {
+        if (created && !createError) {
           setProfile(created as Profile);
         }
+      } else if (error) {
+        console.error('Fehler beim Abrufen des Profils:', error.message);
       }
-    } catch {
-      // Safe error containment
+    } catch (err) {
+      console.error('Unerwarteter Profilfehler:', err);
     }
   };
 
@@ -125,8 +137,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
+      const mockUserId = generateDemoUserId(email);
       const mockUser: User = {
-        id: 'demo-student-id-1234',
+        id: mockUserId,
         email,
         app_metadata: {},
         user_metadata: { display_name: email.split('@')[0] },
@@ -148,8 +161,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, displayName?: string) => {
     if (!isSupabaseConfigured) {
+      const mockUserId = generateDemoUserId(email);
       const mockUser: User = {
-        id: 'demo-student-id-1234',
+        id: mockUserId,
         email,
         app_metadata: {},
         user_metadata: { display_name: displayName || email.split('@')[0] },
@@ -199,7 +213,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null };
     }
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/#reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     return { error };
   };

@@ -4,12 +4,17 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "postinstall": "node scripts/remove-bun-lock.mjs",
+    "predev": "node scripts/remove-bun-lock.mjs",
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "prebuild": "node -e \"['bun.lock','bun.lockb'].forEach(f=>{try{require('fs').unlinkSync(f)}catch(e){}})\"",
-    "build": "vite build",
+    "prebuild": "node scripts/remove-bun-lock.mjs",
+    "build": "vite build && node scripts/generate-seo-assets.mjs",
+    "postbuild": "node scripts/remove-bun-lock.mjs",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js bun.lock bun.lockb",
+    "clean": "node scripts/remove-bun-lock.mjs --all",
+    "prelint": "node scripts/remove-bun-lock.mjs",
     "lint": "tsc --noEmit",
+    "pretest": "node scripts/remove-bun-lock.mjs",
     "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {

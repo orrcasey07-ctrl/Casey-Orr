@@ -69,32 +69,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
   return (
     <div className="space-y-6">
       {/* Welcome Hero */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        {/* Glow accent */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(197,248,42,0.06),transparent_70%)] pointer-events-none" />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-primary text-xs font-semibold mb-2">
-              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#171B18] text-[#C5F82A] border border-[#292F2B] text-xs font-mono font-semibold mb-3">
+              <Star className="w-3.5 h-3.5 text-[#C5F82A] fill-[#C5F82A]" />
               <span>{profile?.school_type || 'Schul- und Studienportal'}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
               Willkommen zurück, {profile?.display_name || user.email?.split('@')[0]}!
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-[#A4AAA5] mt-1.5 max-w-2xl leading-relaxed">
               Hier ist dein persönlicher Überblick über deine Fächer, Noten, anstehenden Klausuren und Lernaufgaben.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               onClick={() => setActiveTab('timer')}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-[#171B18] hover:bg-[#202521] border border-[#292F2B] rounded-xl transition-all cursor-pointer"
             >
-              <Clock className="w-4 h-4 text-primary" />
+              <Clock className="w-4 h-4 text-[#C5F82A]" />
               Fokus starten
             </button>
             <button
               onClick={() => setActiveTab('calculator')}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition-colors shadow-xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl transition-all cursor-pointer shadow-lg shadow-[#C5F82A]/20"
             >
               <Plus className="w-4 h-4" />
               Schnitt berechnen
@@ -103,55 +106,55 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
         </div>
 
         {/* Metric Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100">
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-              <Award className="w-4 h-4 text-emerald-600" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-[#292F2B] relative z-10">
+          <div className="p-4 bg-[#171B18] rounded-xl border border-[#292F2B] hover:border-[#38413b] transition-all">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#A4AAA5] mb-1.5">
+              <Award className="w-4 h-4 text-[#C5F82A]" />
               <span>Aktiver Schnitt</span>
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-black text-white tabular-nums">
               {latestGrade ? latestGrade.average.toFixed(2).replace('.', ',') : '—'}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+            <div className="text-[11px] text-[#A4AAA5] mt-1 truncate">
               {latestGrade ? latestGrade.title : 'Noch kein Schnitt gespeichert'}
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-              <Layers className="w-4 h-4 text-blue-600" />
+          <div className="p-4 bg-[#171B18] rounded-xl border border-[#292F2B] hover:border-[#38413b] transition-all">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#A4AAA5] mb-1.5">
+              <Layers className="w-4 h-4 text-[#C5F82A]" />
               <span>Fächer</span>
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-black text-white tabular-nums">
               {subjects.length}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
+            <div className="text-[11px] text-[#A4AAA5] mt-1">
               Angelegte Studienfächer
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-              <Calendar className="w-4 h-4 text-amber-600" />
+          <div className="p-4 bg-[#171B18] rounded-xl border border-[#292F2B] hover:border-[#38413b] transition-all">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#A4AAA5] mb-1.5">
+              <Calendar className="w-4 h-4 text-[#C5F82A]" />
               <span>Nächste Klausuren</span>
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-black text-white tabular-nums">
               {exams.length}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
+            <div className="text-[11px] text-[#A4AAA5] mt-1">
               Im Lernplan terminiert
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
-              <CheckSquare className="w-4 h-4 text-purple-600" />
+          <div className="p-4 bg-[#171B18] rounded-xl border border-[#292F2B] hover:border-[#38413b] transition-all">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#A4AAA5] mb-1.5">
+              <CheckSquare className="w-4 h-4 text-[#C5F82A]" />
               <span>Offene Aufgaben</span>
             </div>
-            <div className="text-2xl font-black text-slate-900 tabular-nums">
+            <div className="text-2xl sm:text-3xl font-black text-white tabular-nums">
               {pendingTasks.length}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
+            <div className="text-[11px] text-[#A4AAA5] mt-1">
               Zu erledigen
             </div>
           </div>
@@ -162,16 +165,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Left: Recent Notes */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between">
+        <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-[#292F2B]">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-primary" />
-                <h3 className="font-bold text-slate-900 text-sm">Aktuelle Notizen</h3>
+                <BookOpen className="w-4 h-4 text-[#C5F82A]" />
+                <h3 className="font-bold text-white text-sm">Aktuelle Notizen</h3>
               </div>
               <button
                 onClick={() => setActiveTab('notes')}
-                className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
+                className="text-xs font-mono text-[#C5F82A] hover:underline inline-flex items-center gap-1 cursor-pointer"
               >
                 Alle anzeigen ({notes.length})
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -179,21 +182,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
             </div>
 
             {loading ? (
-              <div className="py-8 text-center text-xs text-slate-400">Notizen laden...</div>
+              <div className="py-8 text-center text-xs text-[#A4AAA5]">Notizen laden...</div>
             ) : notes.length === 0 ? (
               <div className="py-8 text-center">
-                <BookOpen className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs text-slate-500">Du hast noch keine Notizen angelegt.</p>
+                <BookOpen className="w-8 h-8 text-[#292F2B] mx-auto mb-2" />
+                <p className="text-xs text-[#A4AAA5]">Du hast noch keine Notizen angelegt.</p>
                 <button
                   onClick={() => setActiveTab('notes')}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-lg transition-colors"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Erste Notiz schreiben
                 </button>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 mt-2">
+              <div className="divide-y divide-[#292F2B] mt-2">
                 {notes.slice(0, 4).map((note) => {
                   const subject = subjects.find((s) => s.id === note.subject_id);
                   return (
@@ -203,23 +206,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
                         setActiveTab('notes');
                         if (onOpenNote) onOpenNote(note.id);
                       }}
-                      className="py-3 hover:bg-slate-50 -mx-2 px-2 rounded-lg cursor-pointer transition-colors"
+                      className="py-3 hover:bg-[#171B18] -mx-2 px-2 rounded-xl cursor-pointer transition-colors"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-slate-900 truncate">
-                          {note.is_pinned && <span className="text-amber-500 mr-1.5">📌</span>}
+                        <span className="font-semibold text-xs text-white truncate">
+                          {note.is_pinned && <span className="text-[#C5F82A] mr-1.5">📌</span>}
                           {note.title}
                         </span>
                         {subject && (
                           <span
-                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
-                            style={{ backgroundColor: `${subject.color}15`, color: subject.color }}
+                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 border border-[#292F2B]"
+                            style={{ backgroundColor: `${subject.color}25`, color: '#FFFFFF' }}
                           >
                             {subject.name}
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                      <p className="text-[11px] text-[#A4AAA5] line-clamp-1 mt-0.5">
                         {note.content || 'Kein Textinhalt'}
                       </p>
                     </div>
@@ -229,10 +232,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
             )}
           </div>
 
-          <div className="pt-4 border-t border-slate-100 mt-4">
+          <div className="pt-4 border-t border-[#292F2B] mt-4">
             <button
               onClick={() => setActiveTab('notes')}
-              className="w-full py-2 text-center text-xs font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-lg transition-colors"
+              className="w-full py-2.5 text-center text-xs font-semibold text-white bg-[#171B18] hover:bg-[#202521] border border-[#292F2B] rounded-xl transition-colors cursor-pointer"
             >
               + Neue Notiz erstellen
             </button>
@@ -240,16 +243,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
         </div>
 
         {/* Right: Upcoming Exams & Tasks */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between">
+        <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-[#292F2B]">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-amber-600" />
-                <h3 className="font-bold text-slate-900 text-sm">Nächste Prüfungen & Aufgaben</h3>
+                <Calendar className="w-4 h-4 text-[#C5F82A]" />
+                <h3 className="font-bold text-white text-sm">Nächste Prüfungen & Aufgaben</h3>
               </div>
               <button
                 onClick={() => setActiveTab('planner')}
-                className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
+                className="text-xs font-mono text-[#C5F82A] hover:underline inline-flex items-center gap-1 cursor-pointer"
               >
                 Lernplan öffnen
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -257,21 +260,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
             </div>
 
             {loading ? (
-              <div className="py-8 text-center text-xs text-slate-400">Prüfungen laden...</div>
+              <div className="py-8 text-center text-xs text-[#A4AAA5]">Prüfungen laden...</div>
             ) : exams.length === 0 ? (
               <div className="py-8 text-center">
-                <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs text-slate-500">Keine anstehenden Klausuren eingetragen.</p>
+                <Calendar className="w-8 h-8 text-[#292F2B] mx-auto mb-2" />
+                <p className="text-xs text-[#A4AAA5]">Keine anstehenden Klausuren eingetragen.</p>
                 <button
                   onClick={() => setActiveTab('planner')}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-lg transition-colors"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Klausurtermin anlegen
                 </button>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 mt-2">
+              <div className="divide-y divide-[#292F2B] mt-2">
                 {exams.slice(0, 3).map((exam) => {
                   const subject = subjects.find((s) => s.id === exam.subject_id);
                   const countdown = getDaysUntil(exam.exam_date);
@@ -280,23 +283,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
                   return (
                     <div key={exam.id} className="py-3">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-slate-900 truncate">
+                        <span className="font-semibold text-xs text-white truncate">
                           {exam.title}
                         </span>
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                            isSoon ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 border ${
+                            isSoon ? 'bg-[#C5F82A]/10 text-[#C5F82A] border-[#C5F82A]/30' : 'bg-[#171B18] text-[#A4AAA5] border-[#292F2B]'
                           }`}
                         >
                           {countdown}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-1">
+                      <div className="flex items-center gap-2 text-[11px] text-[#A4AAA5] mt-1">
                         <span>Datum: {new Date(exam.exam_date).toLocaleDateString('de-DE')}</span>
                         {subject && (
                           <>
                             <span>·</span>
-                            <span style={{ color: subject.color }} className="font-medium">
+                            <span style={{ color: '#C5F82A' }} className="font-medium">
                               {subject.name}
                             </span>
                           </>
@@ -311,10 +314,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ setActiveTab, onOp
             )}
           </div>
 
-          <div className="pt-4 border-t border-slate-100 mt-4">
+          <div className="pt-4 border-t border-[#292F2B] mt-4">
             <button
               onClick={() => setActiveTab('planner')}
-              className="w-full py-2 text-center text-xs font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-lg transition-colors"
+              className="w-full py-2.5 text-center text-xs font-semibold text-white bg-[#171B18] hover:bg-[#202521] border border-[#292F2B] rounded-xl transition-colors cursor-pointer"
             >
               + Klausur oder Lernaufgabe eintragen
             </button>

@@ -1,4 +1,10 @@
 /impressum /impressum.html 200
 /datenschutz /datenschutz.html 200
 /kontakt /kontakt.html 200
-/* /index.html 200
+/dashboard /index.html 200
+/notes /index.html 200
+/subjects /index.html 200
+/planner /index.html 200
+/flashcards /index.html 200
+/timer /index.html 200
+/reset-password /index.html 200

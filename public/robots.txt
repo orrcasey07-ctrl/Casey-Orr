@@ -1,0 +1,14 @@
+# robots.txt für NotenPilot
+# Erlaubt Suchmaschinen den Zugriff auf öffentliche Informations- und Rechnerseiten
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /notes
+Disallow: /subjects
+Disallow: /planner
+Disallow: /flashcards
+Disallow: /timer
+Disallow: /reset-password
+
+# Sitemap wird dynamisch generiert, wenn SITE_URL konfiguriert ist
+Sitemap: /sitemap.xml

@@ -544,11 +544,12 @@ export const deleteDeck = async (userId: string, deckId: string): Promise<void> 
 
 export const getCards = async (userId: string, deckId: string): Promise<Flashcard[]> => {
   if (!isSupabaseConfigured) {
-    return getLocal<Flashcard[]>(`notenpilot_cards_${deckId}`, [
+    const defaultCards: Flashcard[] = deckId === 'deck-1' ? [
       { id: 'card-1', user_id: userId, deck_id: 'deck-1', question: 'Was bedeutet "ubiquitous"?', answer: 'Allgegenwärtig / überall vorkommend (omnipresent).', status: 'learning', created_at: new Date().toISOString() },
       { id: 'card-2', user_id: userId, deck_id: 'deck-1', question: 'Was bedeutet "to mitigate"?', answer: 'Mildern, abschwächen, lindern.', status: 'mastered', created_at: new Date().toISOString() },
       { id: 'card-3', user_id: userId, deck_id: 'deck-1', question: 'Was bedeutet "paradigm shift"?', answer: 'Paradigmenwechsel / grundlegende Änderung eines Denkmusters.', status: 'learning', created_at: new Date().toISOString() },
-    ]);
+    ] : [];
+    return getLocal<Flashcard[]>(`notenpilot_cards_${userId}_${deckId}`, defaultCards);
   }
 
   const { data, error } = await supabase
@@ -574,7 +575,7 @@ export const createCard = async (userId: string, deckId: string, question: strin
       status: 'learning',
       created_at: new Date().toISOString(),
     };
-    setLocal(`notenpilot_cards_${deckId}`, [...cards, newCard]);
+    setLocal(`notenpilot_cards_${userId}_${deckId}`, [...cards, newCard]);
     return newCard;
   }
 
@@ -591,7 +592,7 @@ export const createCard = async (userId: string, deckId: string, question: strin
 export const updateCardStatus = async (userId: string, cardId: string, status: 'learning' | 'mastered', deckId: string): Promise<void> => {
   if (!isSupabaseConfigured) {
     const cards = await getCards(userId, deckId);
-    setLocal(`notenpilot_cards_${deckId}`, cards.map(c => c.id === cardId ? { ...c, status } : c));
+    setLocal(`notenpilot_cards_${userId}_${deckId}`, cards.map(c => c.id === cardId ? { ...c, status } : c));
     return;
   }
 
@@ -607,7 +608,7 @@ export const updateCardStatus = async (userId: string, cardId: string, status: '
 export const deleteCard = async (userId: string, cardId: string, deckId: string): Promise<void> => {
   if (!isSupabaseConfigured) {
     const cards = await getCards(userId, deckId);
-    setLocal(`notenpilot_cards_${deckId}`, cards.filter(c => c.id !== cardId));
+    setLocal(`notenpilot_cards_${userId}_${deckId}`, cards.filter(c => c.id !== cardId));
     return;
   }
 

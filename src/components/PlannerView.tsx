@@ -79,13 +79,19 @@ export const PlannerView: React.FC = () => {
 
   const handleDeleteExam = async (id: string) => {
     if (!user) return;
-    await deleteExam(user.id, id);
-    setExams(exams.filter((e) => e.id !== id));
+    setErrorMsg(null);
+    try {
+      await deleteExam(user.id, id);
+      setExams((prev) => prev.filter((e) => e.id !== id));
+    } catch {
+      setErrorMsg('Fehler beim Löschen der Klausur.');
+    }
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !taskTitle.trim()) return;
+    setErrorMsg(null);
 
     try {
       const created = await createStudyTask(
@@ -98,21 +104,34 @@ export const PlannerView: React.FC = () => {
       setTaskTitle('');
       setTaskDueDate('');
     } catch {
-      //
+      setErrorMsg('Fehler beim Anlegen der Aufgabe.');
     }
   };
 
   const handleToggleTask = async (taskId: string, currentStatus: boolean) => {
     if (!user) return;
+    setErrorMsg(null);
     const nextStatus = !currentStatus;
-    setTasks(tasks.map((t) => (t.id === taskId ? { ...t, is_completed: nextStatus } : t)));
-    await toggleStudyTask(user.id, taskId, nextStatus);
+    // Optimistic UI update
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, is_completed: nextStatus } : t)));
+    try {
+      await toggleStudyTask(user.id, taskId, nextStatus);
+    } catch {
+      // Rollback on failure
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, is_completed: currentStatus } : t)));
+      setErrorMsg('Status der Aufgabe konnte nicht aktualisiert werden.');
+    }
   };
 
   const handleDeleteTask = async (taskId: string) => {
     if (!user) return;
-    setTasks(tasks.filter((t) => t.id !== taskId));
-    await deleteStudyTask(user.id, taskId);
+    setErrorMsg(null);
+    try {
+      await deleteStudyTask(user.id, taskId);
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    } catch {
+      setErrorMsg('Fehler beim Löschen der Aufgabe.');
+    }
   };
 
   const getDaysUntil = (dateStr: string) => {
@@ -128,22 +147,22 @@ export const PlannerView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-white">
       {/* Top Banner */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-amber-600" />
-            <h2 className="text-xl font-bold text-slate-900">Lernplan & Prüfungskalender</h2>
+            <Calendar className="w-5 h-5 text-[#C5F82A]" />
+            <h2 className="text-xl font-black text-white">Lernplan & Prüfungskalender</h2>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[#A4AAA5] mt-1">
             Plane anstehende Klausuren, behalte Fristen im Blick und hake deine Vorbereitungsaufgaben ab.
           </p>
         </div>
 
         <button
           onClick={() => setShowExamForm(!showExamForm)}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-lg transition-colors self-start sm:self-auto shadow-2xs"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl transition-all self-start sm:self-auto cursor-pointer shadow-md shadow-[#C5F82A]/20"
         >
           <Plus className="w-4 h-4" />
           {showExamForm ? 'Formular schließen' : 'Klausur eintragen'}
@@ -152,17 +171,17 @@ export const PlannerView: React.FC = () => {
 
       {/* New Exam Dialog */}
       {showExamForm && (
-        <form onSubmit={handleCreateExam} className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
-          <h3 className="font-bold text-sm text-slate-900">Neue Klausur / Prüfung eintragen</h3>
+        <form onSubmit={handleCreateExam} className="p-6 bg-[#111412] border border-[#292F2B] rounded-2xl shadow-xl space-y-4">
+          <h3 className="font-bold text-sm text-white">Neue Klausur / Prüfung eintragen</h3>
           {errorMsg && (
-            <div className="text-xs text-red-600 flex items-center gap-1">
+            <div className="text-xs text-red-400 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" /> {errorMsg}
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono font-semibold text-[#A4AAA5] mb-1">
                 Titel der Prüfung *
               </label>
               <input
@@ -171,12 +190,12 @@ export const PlannerView: React.FC = () => {
                 placeholder="z. B. Mathematik Klausur 2"
                 value={examTitle}
                 onChange={(e) => setExamTitle(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white placeholder-[#717772] focus:outline-none focus:border-[#C5F82A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono font-semibold text-[#A4AAA5] mb-1">
                 Datum *
               </label>
               <input
@@ -184,18 +203,18 @@ export const PlannerView: React.FC = () => {
                 required
                 value={examDate}
                 onChange={(e) => setExamDate(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white focus:outline-none focus:border-[#C5F82A]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono font-semibold text-[#A4AAA5] mb-1">
                 Fach zuordnen
               </label>
               <select
                 value={examSubjectId}
                 onChange={(e) => setExamSubjectId(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white focus:outline-none focus:border-[#C5F82A]"
               >
                 <option value="">(Kein Fach ausgewählt)</option>
                 {subjects.map((sub) => (
@@ -207,7 +226,7 @@ export const PlannerView: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
+              <label className="block text-xs font-mono font-semibold text-[#A4AAA5] mb-1">
                 Gewichtung für den Gesamtschnitt
               </label>
               <input
@@ -217,13 +236,13 @@ export const PlannerView: React.FC = () => {
                 max="10"
                 value={examWeight}
                 onChange={(e) => setExamWeight(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white focus:outline-none focus:border-[#C5F82A]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-mono font-semibold text-[#A4AAA5] mb-1">
               Themenschwerpunkte / Notizen (optional)
             </label>
             <input
@@ -231,7 +250,7 @@ export const PlannerView: React.FC = () => {
               placeholder="z. B. Kapitel 4 & 5, Formelblatt mitbringen"
               value={examDesc}
               onChange={(e) => setExamDesc(e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white placeholder-[#717772] focus:outline-none focus:border-[#C5F82A]"
             />
           </div>
 
@@ -239,13 +258,13 @@ export const PlannerView: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowExamForm(false)}
-              className="px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="px-3 py-2 text-xs font-semibold text-[#A4AAA5] hover:text-white rounded-lg border border-[#292F2B] cursor-pointer"
             >
               Abbrechen
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-hover rounded-lg shadow-xs"
+              className="px-4 py-2 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl shadow-md transition-all cursor-pointer"
             >
               Klausur speichern
             </button>
@@ -257,25 +276,25 @@ export const PlannerView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Left: Upcoming Exams */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <Clock className="w-4 h-4 text-primary" />
+        <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-[#292F2B]">
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[#C5F82A]" />
               <span>Anstehende Klausuren</span>
             </h3>
-            <span className="text-xs text-slate-400">{exams.length} Termine</span>
+            <span className="text-xs font-mono text-[#A4AAA5]">{exams.length} Termine</span>
           </div>
 
           <div className="mt-4 space-y-3">
             {loading ? (
-              <div className="py-8 text-center text-xs text-slate-400">Lade Termine...</div>
+              <div className="py-8 text-center text-xs text-[#A4AAA5]">Lade Termine...</div>
             ) : exams.length === 0 ? (
               <div className="py-10 text-center">
-                <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs text-slate-500">Keine Prüfungen eingetragen.</p>
+                <Calendar className="w-8 h-8 text-[#292F2B] mx-auto mb-2" />
+                <p className="text-xs text-[#A4AAA5]">Keine Prüfungen eingetragen.</p>
                 <button
                   onClick={() => setShowExamForm(true)}
-                  className="mt-3 px-3 py-1.5 text-xs font-semibold text-primary bg-primary-light hover:bg-blue-100 rounded-lg transition-colors"
+                  className="mt-3 px-3.5 py-2 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl transition-colors cursor-pointer"
                 >
                   Erste Klausur eintragen
                 </button>
@@ -288,34 +307,34 @@ export const PlannerView: React.FC = () => {
                 return (
                   <div
                     key={exam.id}
-                    className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-white transition-all space-y-2"
+                    className="p-3.5 rounded-xl border border-[#292F2B] bg-[#171B18] hover:border-[#38413b] transition-all space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h4 className="font-bold text-xs text-slate-900">{exam.title}</h4>
-                        <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-1">
-                          <span>{new Date(exam.exam_date).toLocaleDateString('de-DE')}</span>
+                        <h4 className="font-bold text-xs text-white">{exam.title}</h4>
+                        <div className="flex items-center gap-2 text-[11px] text-[#A4AAA5] mt-1">
+                          <span className="font-mono">{new Date(exam.exam_date).toLocaleDateString('de-DE')}</span>
                           {subject && (
                             <>
                               <span>·</span>
-                              <span style={{ color: subject.color }} className="font-semibold">
+                              <span style={{ color: '#C5F82A' }} className="font-semibold">
                                 {subject.name}
                               </span>
                             </>
                           )}
                           <span>·</span>
-                          <span>Gewichtung: {exam.weight}x</span>
+                          <span className="font-mono">Gewichtung: {exam.weight}x</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
                             daysInfo.isOverdue
-                              ? 'bg-slate-200 text-slate-600'
+                              ? 'bg-[#171B18] text-[#717772] border-[#292F2B]'
                               : daysInfo.isSoon
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-blue-50 text-primary'
+                              ? 'bg-[#C5F82A]/10 text-[#C5F82A] border-[#C5F82A]/30'
+                              : 'bg-[#171B18] text-[#A4AAA5] border-[#292F2B]'
                           }`}
                         >
                           {daysInfo.label}
@@ -324,7 +343,7 @@ export const PlannerView: React.FC = () => {
                         <button
                           onClick={() => handleDeleteExam(exam.id)}
                           title="Löschen"
-                          className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                          className="p-1 text-[#A4AAA5] hover:text-red-400 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -332,7 +351,7 @@ export const PlannerView: React.FC = () => {
                     </div>
 
                     {exam.description && (
-                      <p className="text-[11px] text-slate-600 bg-white p-2 rounded-lg border border-slate-100">
+                      <p className="text-[11px] text-[#A4AAA5] bg-[#090B0A] p-2.5 rounded-xl border border-[#292F2B]">
                         {exam.description}
                       </p>
                     )}
@@ -344,13 +363,13 @@ export const PlannerView: React.FC = () => {
         </div>
 
         {/* Right: Study Tasks Checklist */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <CheckSquare className="w-4 h-4 text-emerald-700" />
+        <div className="bg-[#111412] rounded-2xl border border-[#292F2B] p-6 shadow-xl">
+          <div className="flex items-center justify-between pb-3 border-b border-[#292F2B]">
+            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+              <CheckSquare className="w-4 h-4 text-[#C5F82A]" />
               <span>Lernaufgaben & To-Do Liste</span>
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs font-mono text-[#A4AAA5]">
               {tasks.filter((t) => !t.is_completed).length} offen
             </span>
           </div>
@@ -363,17 +382,17 @@ export const PlannerView: React.FC = () => {
               placeholder="Neue Lernaufgabe hinzufügen..."
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
-              className="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white"
+              className="flex-1 px-3 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white placeholder-[#717772] focus:outline-none focus:border-[#C5F82A]"
             />
             <input
               type="date"
               value={taskDueDate}
               onChange={(e) => setTaskDueDate(e.target.value)}
-              className="px-2 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700"
+              className="px-2 py-2 text-xs bg-[#090B0A] border border-[#292F2B] rounded-xl text-white focus:outline-none focus:border-[#C5F82A]"
             />
             <button
               type="submit"
-              className="px-3 py-1.5 text-xs font-bold text-white bg-primary hover:bg-primary-hover rounded-lg transition-colors shrink-0"
+              className="px-3.5 py-2 text-xs font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl transition-colors shrink-0 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -382,9 +401,9 @@ export const PlannerView: React.FC = () => {
           {/* Tasks list */}
           <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1">
             {loading ? (
-              <div className="py-6 text-center text-xs text-slate-400">Lade Aufgaben...</div>
+              <div className="py-6 text-center text-xs text-[#A4AAA5]">Lade Aufgaben...</div>
             ) : tasks.length === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-500">
+              <div className="py-8 text-center text-xs text-[#A4AAA5]">
                 Keine Aufgaben vorhanden. Trage oben deine nächste Lerneinheit ein!
               </div>
             ) : (
@@ -395,12 +414,12 @@ export const PlannerView: React.FC = () => {
                 return (
                   <div
                     key={task.id}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border transition-colors ${
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
                       task.is_completed
-                        ? 'bg-slate-50/50 border-slate-200 opacity-60'
+                        ? 'bg-[#171B18]/40 border-[#292F2B] opacity-50'
                         : isOverdue
-                        ? 'bg-red-50/40 border-red-200'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
+                        ? 'bg-[#171B18] border-red-500/40'
+                        : 'bg-[#171B18] border-[#292F2B] hover:border-[#38413b]'
                     }`}
                   >
                     <label className="flex items-center gap-2.5 flex-1 cursor-pointer">
@@ -408,11 +427,11 @@ export const PlannerView: React.FC = () => {
                         type="checkbox"
                         checked={task.is_completed}
                         onChange={() => handleToggleTask(task.id, task.is_completed)}
-                        className="w-4 h-4 accent-primary rounded cursor-pointer shrink-0"
+                        className="w-4 h-4 accent-[#C5F82A] rounded cursor-pointer shrink-0"
                       />
                       <span
-                        className={`text-xs text-slate-900 ${
-                          task.is_completed ? 'line-through text-slate-400' : 'font-medium'
+                        className={`text-xs ${
+                          task.is_completed ? 'line-through text-[#717772]' : 'font-medium text-white'
                         }`}
                       >
                         {task.title}
@@ -422,12 +441,12 @@ export const PlannerView: React.FC = () => {
                     <div className="flex items-center gap-2">
                       {daysInfo && (
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border ${
                             task.is_completed
-                              ? 'text-slate-400 bg-slate-100'
+                              ? 'text-[#717772] bg-[#090B0A] border-[#292F2B]'
                               : isOverdue
-                              ? 'text-red-700 bg-red-100 font-bold'
-                              : 'text-slate-500 bg-slate-100'
+                              ? 'text-red-400 bg-red-500/10 border-red-500/30'
+                              : 'text-[#A4AAA5] bg-[#090B0A] border-[#292F2B]'
                           }`}
                         >
                           {daysInfo.label}
@@ -437,7 +456,7 @@ export const PlannerView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleDeleteTask(task.id)}
-                        className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                        className="p-1 text-[#A4AAA5] hover:text-red-400 transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

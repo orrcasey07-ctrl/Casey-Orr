@@ -1,5 +1,13 @@
 import React from 'react';
-import { Calculator, ShieldCheck, FileText, Mail, Heart } from 'lucide-react';
+import {
+  GraduationCap,
+  ShieldCheck,
+  FileText,
+  Mail,
+  Heart,
+  ArrowUpRight,
+  Calculator,
+} from 'lucide-react';
 
 interface FooterProps {
   onNavigateTab?: (tab: string) => void;
@@ -7,83 +15,133 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
   return (
-    <footer className="bg-slate-900 text-slate-400 mt-20 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer className="bg-[#090B0A] text-[#A4AAA5] border-t border-[#292F2B] relative overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-48 bg-[radial-gradient(ellipse_at_bottom,rgba(197,248,42,0.03),transparent_70%)] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-12">
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-lg">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-                <Calculator className="w-5 h-5" />
+            <div className="flex items-center gap-2.5 text-white font-extrabold text-xl tracking-tight">
+              <div className="w-8 h-8 rounded-lg bg-[#171B18] border border-[#292F2B] flex items-center justify-center text-[#C5F82A]">
+                <GraduationCap className="w-4 h-4" />
               </div>
-              <span>NotenPilot</span>
+              <span>
+                Noten<span className="text-[#C5F82A]">Pilot</span>
+              </span>
             </div>
-            <p className="text-sm text-slate-400 max-w-md leading-relaxed">
-              Dein kostenloser deutscher Notenrechner, Notenspiegel und Lernplaner. Berechne deinen gewichteten Notendurchschnitt für Schule, Abitur und Universität – blitzschnell und datensparsam.
+            <p className="text-sm text-[#A4AAA5] max-w-sm leading-relaxed">
+              Deine Noten. Dein Überblick. Deine Zukunft. Der kostenlose Notenrechner, Notenspiegel und Lernbegleiter für Schülerinnen, Schüler und Studierende in Deutschland.
             </p>
-            <div className="text-xs text-slate-500">
-              Made with <Heart className="w-3.5 h-3.5 text-rose-500 inline mx-0.5" /> für Schüler und Studierende in Deutschland.
+            <div className="text-xs text-[#A4AAA5]/70 font-mono flex items-center gap-1.5 pt-1">
+              <span>Entwickelt für den deutschen Schul- &amp; Studienalltag</span>
             </div>
           </div>
 
-          {/* Quick Features */}
+          {/* Navigation Links */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Funktionen</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+              Werkzeuge
+            </h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li>
                 <button
+                  type="button"
                   onClick={() => onNavigateTab?.('calculator')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Notenrechner (Kostenlos)
+                  Notenrechner (1,0 - 6,0)
                 </button>
               </li>
               <li>
                 <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('calculator')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Oberstufen-Rechner (0-15 P)
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('calculator')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Zielnoten-Planer
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
                   onClick={() => onNavigateTab?.('notes')}
-                  className="hover:text-white transition-colors"
+                  className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Lernnotizen & Cloud-Speicher
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigateTab?.('planner')}
-                  className="hover:text-white transition-colors"
-                >
-                  Klausuren- & Aufgabenplaner
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigateTab?.('flashcards')}
-                  className="hover:text-white transition-colors"
-                >
-                  Karteikarten & Lernbox
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigateTab?.('timer')}
-                  className="hover:text-white transition-colors"
-                >
-                  Pomodoro Fokus-Timer
+                  Lernnotizen (Cloud)
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Legal & Info */}
+          {/* Study Features */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Rechtliches</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+              Lernsystem
+            </h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('planner')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Klausuren- &amp; Aufgabenplaner
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('flashcards')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Karteikarten &amp; Lernbox
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('timer')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Pomodoro Fokus-Timer
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab?.('subjects')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Fächerübersicht &amp; Notenspiegel
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal Pages */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+              Rechtliches
+            </h4>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li>
                 <a
                   href="/impressum.html"
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
-                  <FileText className="w-4 h-4 text-slate-400" />
-                  Impressum
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Impressum</span>
                 </a>
               </li>
               <li>
@@ -91,8 +149,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
                   href="/datenschutz.html"
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
-                  <ShieldCheck className="w-4 h-4 text-slate-400" />
-                  Datenschutzerklärung
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Datenschutzerklärung</span>
                 </a>
               </li>
               <li>
@@ -100,8 +158,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
                   href="/kontakt.html"
                   className="flex items-center gap-1.5 hover:text-white transition-colors"
                 >
-                  <Mail className="w-4 h-4 text-slate-400" />
-                  Kontakt & Support
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Kontakt</span>
                 </a>
               </li>
             </ul>
@@ -109,14 +167,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
         </div>
 
         {/* Disclaimer & Bottom Bar */}
-        <div className="pt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-8 border-t border-[#292F2B] text-xs text-[#A4AAA5]/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>
-            &copy; {new Date().getFullYear()} NotenPilot. Alle Angaben und Berechnungen ohne Gewähr. Prüfungsordnungen der Bundesländer und Universitäten sind maßgeblich.
+            &copy; {new Date().getFullYear()} NotenPilot. Alle Berechnungen ohne Gewähr. Prüfungsordnungen der Bundesländer und Hochschulen sind maßgeblich.
           </p>
-          <div className="flex items-center gap-4">
-            <a href="/datenschutz.html" className="hover:text-slate-400 transition-colors">DSGVO-konform</a>
+          <div className="flex items-center gap-3">
+            <a href="/datenschutz.html" className="hover:text-white transition-colors">
+              DSGVO-konform
+            </a>
             <span>&bull;</span>
-            <a href="/impressum.html" className="hover:text-slate-400 transition-colors">Rechtliche Hinweise</a>
+            <a href="/impressum.html" className="hover:text-white transition-colors">
+              Rechtliche Hinweise
+            </a>
           </div>
         </div>
       </div>

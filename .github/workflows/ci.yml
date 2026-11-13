@@ -19,8 +19,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Verify no bun.lock lockfile exists
+        run: |
+          if [ -f bun.lock ] || [ -f bun.lockb ]; then
+            echo "Error: bun.lock or bun.lockb found in repository. Remove it to avoid Cloudflare Pages build errors."
+            exit 1
+          fi
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Typecheck
+        run: npm run lint
       - name: Run calculator unit tests
         run: npm test
       - name: Build static website
