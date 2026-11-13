@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthModalMode } from './lib/authUtils';
 import { Navbar, ActiveTab } from './components/Navbar';
 import { AuthModal } from './components/AuthModal';
 import { GradeCalculator } from './components/GradeCalculator';
@@ -45,15 +46,21 @@ const pathnameToTab = (pathname: string): ActiveTab => {
 };
 
 const AppContent: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading, isPasswordRecovery, enterDemoMode } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>('calculator');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalInitialMode, setAuthModalInitialMode] = useState<'login' | 'signup' | 'forgot'>('login');
+  const [authModalInitialMode, setAuthModalInitialMode] = useState<AuthModalMode>('login');
 
-  const openAuth = (mode: 'login' | 'signup' | 'forgot' = 'login') => {
+  const openAuth = (mode: AuthModalMode = 'login') => {
     setAuthModalInitialMode(mode);
     setIsAuthModalOpen(true);
   };
+
+  React.useEffect(() => {
+    if (isPasswordRecovery) {
+      openAuth('update_password');
+    }
+  }, [isPasswordRecovery]);
 
   // Sync initial URL path and popstate browser navigation
   React.useEffect(() => {
@@ -124,7 +131,7 @@ const AppContent: React.FC = () => {
       <Navbar
         activeTab={activeTab}
         setActiveTab={handleNavigateTab}
-        openAuthModal={() => openAuth('login')}
+        openAuthModal={(mode = 'login') => openAuth(mode)}
         onNavigateLandingSection={scrollToSection}
       />
 
@@ -789,7 +796,14 @@ const AppContent: React.FC = () => {
         {/* Authenticated / Student Portal Views */}
         {activeTab !== 'calculator' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-            {!user && ['dashboard', 'notes', 'subjects', 'planner'].includes(activeTab) ? (
+            {authLoading && ['dashboard', 'notes', 'subjects', 'planner'].includes(activeTab) ? (
+              <div className="max-w-xl mx-auto my-12 p-10 rounded-3xl bg-[#111412] border border-[#292F2B] text-center space-y-4">
+                <div className="w-8 h-8 border-2 border-[#C5F82A] border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-mono text-[#A4AAA5]">
+                  Schülerbereich wird geladen...
+                </p>
+              </div>
+            ) : !user && ['dashboard', 'notes', 'subjects', 'planner'].includes(activeTab) ? (
               <div className="max-w-xl mx-auto my-12 p-8 sm:p-10 rounded-3xl bg-[#111412] border border-[#292F2B] text-center shadow-2xl space-y-5">
                 <div className="w-14 h-14 rounded-2xl bg-[#171B18] border border-[#292F2B] flex items-center justify-center text-[#C5F82A] mx-auto shadow-lg">
                   <ShieldCheck className="w-7 h-7" />
@@ -802,7 +816,7 @@ const AppContent: React.FC = () => {
                     Anmeldung erforderlich
                   </h3>
                   <p className="text-xs sm:text-sm text-[#A4AAA5] mt-2 leading-relaxed">
-                    Um auf dein persönliches Dashboard, deine Fächer, Notenspiegel, Prüfungen und Cloud-Notizen zuzugreifen, melde dich bitte an.
+                    Um auf dein persönliches Dashboard, deine Fächer, Notenspiegel, Prüfungen und Cloud-Notizen zuzugreifen, melde dich bitte an oder starte direkt lokal.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -816,10 +830,27 @@ const AppContent: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleNavigateTab('calculator')}
+                    onClick={() => openAuth('signup')}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#171B18] hover:bg-[#202521] text-white border border-[#292F2B] text-xs sm:text-sm font-semibold transition-all cursor-pointer"
                   >
-                    <span>Zum Notenrechner</span>
+                    <span>Kostenlos registrieren</span>
+                  </button>
+                </div>
+                <div className="pt-3 border-t border-[#292F2B] flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => enterDemoMode()}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#090B0A] hover:bg-[#171B18] text-[#C5F82A] border border-[#292F2B] text-xs font-semibold transition-all cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Sofort ohne Konto testen (Lokal)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleNavigateTab('calculator')}
+                    className="text-xs text-[#A4AAA5] hover:text-white transition-colors cursor-pointer"
+                  >
+                    Zurück zum Notenrechner
                   </button>
                 </div>
               </div>
@@ -845,6 +876,11 @@ const AppContent: React.FC = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authModalInitialMode}
+        onAuthSuccess={() => {
+          if (activeTab === 'calculator') {
+            handleNavigateTab('dashboard');
+          }
+        }}
       />
     </div>
   );

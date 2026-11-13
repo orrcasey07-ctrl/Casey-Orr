@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured, Profile } from '../lib/supabase';
+import { isDemoUserId, normalizeEmail, shouldUseLocalData } from '../lib/authUtils';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -8,10 +9,20 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   isConfigured: boolean;
+  isDemoMode: boolean;
+  isPasswordRecovery: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, displayName?: string) => Promise<{ error: Error | null; message?: string }>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName?: string
+  ) => Promise<{ error: Error | null; message?: string; needsEmailConfirmation?: boolean }>;
+  resendConfirmation: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
+  clearPasswordRecovery: () => void;
+  enterDemoMode: (displayName?: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -29,34 +40,51 @@ const generateDemoUserId = (email: string): string => {
   return `demo_${Math.abs(hash).toString(36)}`;
 };
 
+const loadStoredDemoUser = (): User | null => {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY_USER);
+  if (!stored) return null;
+  try {
+    const parsed = JSON.parse(stored) as User;
+    if (parsed && typeof parsed.id === 'string') {
+      return parsed;
+    }
+  } catch {
+    // ignore invalid stored user
+  }
+  return null;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(false);
 
-  // Fetch student profile from Supabase
-  const fetchProfile = async (userId: string) => {
-    if (!isSupabaseConfigured) {
+  const isDemoMode = !isSupabaseConfigured || isDemoUserId(user?.id);
+
+  // Fetch student profile from Supabase or local browser store
+  const fetchProfile = async (userId: string, userEmail?: string | null, fallbackName?: string) => {
+    if (shouldUseLocalData(isSupabaseConfigured, userId)) {
       const stored = localStorage.getItem(`notenpilot_profile_${userId}`);
       if (stored) {
         try {
           setProfile(JSON.parse(stored));
+          return;
         } catch {
-          // ignore parsing error
+          // ignore parsing error and regenerate default profile
         }
-      } else {
-        const defaultProfile: Profile = {
-          id: userId,
-          display_name: 'Schüler',
-          school_type: 'Gymnasium',
-          avatar_url: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        setProfile(defaultProfile);
-        localStorage.setItem(`notenpilot_profile_${userId}`, JSON.stringify(defaultProfile));
       }
+      const defaultProfile: Profile = {
+        id: userId,
+        display_name: fallbackName || (userEmail ? userEmail.split('@')[0] : 'Schüler (Lokal)'),
+        school_type: 'Gymnasium',
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setProfile(defaultProfile);
+      localStorage.setItem(`notenpilot_profile_${userId}`, JSON.stringify(defaultProfile));
       return;
     }
 
@@ -70,10 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data && !error) {
         setProfile(data as Profile);
       } else if (error && (error.code === 'PGRST116' || error.message?.includes('0 rows'))) {
-        // Only if profile does not exist yet (PGRST116 = 0 rows), insert a default profile safely
+        const resolvedName =
+          fallbackName || (userEmail ? userEmail.split('@')[0] : 'Schüler');
         const newProfile: Partial<Profile> = {
           id: userId,
-          display_name: user?.email ? user.email.split('@')[0] : 'Schüler',
+          display_name: resolvedName,
           school_type: 'Gymnasium',
         };
         const { data: created, error: createError } = await supabase
@@ -94,40 +123,80 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      // Local fallback mode for prototyping before publishable key is entered
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY_USER);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          setUser(parsed);
-          fetchProfile(parsed.id);
-        } catch {
-          // ignore
-        }
+      const demoUser = loadStoredDemoUser();
+      if (demoUser) {
+        setUser(demoUser);
+        fetchProfile(
+          demoUser.id,
+          demoUser.email,
+          typeof demoUser.user_metadata?.display_name === 'string'
+            ? demoUser.user_metadata.display_name
+            : undefined
+        );
       }
       setLoading(false);
       return;
     }
 
-    // Official Supabase Auth Session Handling
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      if (currentSession?.user) {
+        localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
+        setSession(currentSession);
+        setUser(currentSession.user);
+        fetchProfile(
+          currentSession.user.id,
+          currentSession.user.email,
+          typeof currentSession.user.user_metadata?.display_name === 'string'
+            ? currentSession.user.user_metadata.display_name
+            : undefined
+        );
+      } else {
+        const demoUser = loadStoredDemoUser();
+        if (demoUser) {
+          setSession(null);
+          setUser(demoUser);
+          fetchProfile(
+            demoUser.id,
+            demoUser.email,
+            typeof demoUser.user_metadata?.display_name === 'string'
+              ? demoUser.user_metadata.display_name
+              : undefined
+          );
+        } else {
+          setSession(null);
+          setUser(null);
+        }
       }
       setLoading(false);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsPasswordRecovery(true);
+      }
+
+      if (nextSession?.user) {
+        localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
+        setSession(nextSession);
+        setUser(nextSession.user);
+        fetchProfile(
+          nextSession.user.id,
+          nextSession.user.email,
+          typeof nextSession.user.user_metadata?.display_name === 'string'
+            ? nextSession.user.user_metadata.display_name
+            : undefined
+        );
       } else {
-        setProfile(null);
+        setSession(null);
+        const demoUser = loadStoredDemoUser();
+        if (demoUser) {
+          setUser(demoUser);
+        } else {
+          setUser(null);
+          setProfile(null);
+        }
       }
       setLoading(false);
     });
@@ -135,92 +204,155 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
+  const enterDemoMode = async (displayName = 'Gast-Schüler (Lokal)') => {
+    const demoUserId = 'demo_schueler';
+    const demoUser: User = {
+      id: demoUserId,
+      email: 'schueler@lokal.notenpilot',
+      app_metadata: {},
+      user_metadata: { display_name: displayName },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(demoUser));
+    setSession(null);
+    setUser(demoUser);
+    await fetchProfile(demoUser.id, demoUser.email, displayName);
+  };
+
   const signIn = async (email: string, password: string) => {
+    const cleanedEmail = normalizeEmail(email);
+
     if (!isSupabaseConfigured) {
-      const mockUserId = generateDemoUserId(email);
+      const mockUserId = generateDemoUserId(cleanedEmail);
       const mockUser: User = {
         id: mockUserId,
-        email,
+        email: cleanedEmail,
         app_metadata: {},
-        user_metadata: { display_name: email.split('@')[0] },
+        user_metadata: { display_name: cleanedEmail.split('@')[0] },
         aud: 'authenticated',
         created_at: new Date().toISOString(),
       };
       setUser(mockUser);
       localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(mockUser));
-      await fetchProfile(mockUser.id);
+      await fetchProfile(mockUser.id, cleanedEmail);
       return { error: null };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
+    localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanedEmail,
       password,
     });
+    if (!error && data.session?.user) {
+      setSession(data.session);
+      setUser(data.session.user);
+      await fetchProfile(data.session.user.id, data.session.user.email);
+    }
     return { error };
   };
 
   const signUp = async (email: string, password: string, displayName?: string) => {
+    const cleanedEmail = normalizeEmail(email);
+    const trimmedName = displayName?.trim() || cleanedEmail.split('@')[0];
+
     if (!isSupabaseConfigured) {
-      const mockUserId = generateDemoUserId(email);
+      const mockUserId = generateDemoUserId(cleanedEmail);
       const mockUser: User = {
         id: mockUserId,
-        email,
+        email: cleanedEmail,
         app_metadata: {},
-        user_metadata: { display_name: displayName || email.split('@')[0] },
+        user_metadata: { display_name: trimmedName },
         aud: 'authenticated',
         created_at: new Date().toISOString(),
       };
       setUser(mockUser);
       localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(mockUser));
-      await fetchProfile(mockUser.id);
-      return { error: null, message: 'Erfolgreich angemeldet (Lokaler Modus).' };
+      await fetchProfile(mockUser.id, cleanedEmail, trimmedName);
+      return { error: null, message: 'Erfolgreich angemeldet (Lokaler Modus).', needsEmailConfirmation: false };
     }
 
+    localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanedEmail,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
         data: {
-          display_name: displayName || email.split('@')[0],
+          display_name: trimmedName,
         },
       },
     });
 
     if (error) return { error };
 
-    const message = data.session
-      ? 'Konto erfolgreich erstellt und angemeldet!'
-      : 'Konto erstellt! Bitte überprüfe deine E-Mails zur Bestätigung.';
+    const needsEmailConfirmation = !data.session;
+    const message = needsEmailConfirmation
+      ? `Konto erstellt! Wir haben einen Bestätigungslink an ${cleanedEmail} gesendet. Klicke auf den Link in deinem Postfach, um dein Cloud-Konto freizuschalten.`
+      : 'Konto erfolgreich erstellt und angemeldet!';
 
-    return { error: null, message };
+    return { error: null, message, needsEmailConfirmation };
+  };
+
+  const resendConfirmation = async (email: string) => {
+    const cleanedEmail = normalizeEmail(email);
+    if (!isSupabaseConfigured) {
+      return { error: null };
+    }
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: cleanedEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+    return { error };
   };
 
   const signOut = async () => {
-    if (!isSupabaseConfigured) {
-      setUser(null);
-      setProfile(null);
-      localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
-      return;
-    }
+    localStorage.removeItem(LOCAL_STORAGE_KEY_USER);
+    setIsPasswordRecovery(false);
 
-    await supabase.auth.signOut();
+    if (isSupabaseConfigured && session) {
+      await supabase.auth.signOut();
+    }
+    setSession(null);
     setUser(null);
     setProfile(null);
   };
 
   const resetPassword = async (email: string) => {
+    const cleanedEmail = normalizeEmail(email);
     if (!isSupabaseConfigured) {
       return { error: null };
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanedEmail, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     return { error };
   };
 
+  const updatePassword = async (newPassword: string) => {
+    if (!isSupabaseConfigured) {
+      setIsPasswordRecovery(false);
+      return { error: null };
+    }
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+    if (!error) {
+      setIsPasswordRecovery(false);
+    }
+    return { error };
+  };
+
+  const clearPasswordRecovery = () => {
+    setIsPasswordRecovery(false);
+  };
+
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await fetchProfile(user.id, user.email);
     }
   };
 
@@ -232,10 +364,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         profile,
         loading,
         isConfigured: isSupabaseConfigured,
+        isDemoMode,
+        isPasswordRecovery,
         signIn,
         signUp,
+        resendConfirmation,
         signOut,
         resetPassword,
+        updatePassword,
+        clearPasswordRecovery,
+        enterDemoMode,
         refreshProfile,
       }}
     >

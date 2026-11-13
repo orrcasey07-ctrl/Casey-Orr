@@ -22,7 +22,7 @@ export type ActiveTab = 'calculator' | 'dashboard' | 'notes' | 'subjects' | 'pla
 interface NavbarProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
-  openAuthModal: () => void;
+  openAuthModal: (mode?: 'login' | 'signup') => void;
   onNavigateLandingSection?: (sectionId: string) => void;
 }
 
@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   openAuthModal,
   onNavigateLandingSection,
 }) => {
-  const { user, profile, signOut, isConfigured } = useAuth();
+  const { user, profile, signOut, isDemoMode } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handleNavClick('calculator')}
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+              className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                 activeTab === 'calculator'
                   ? 'text-white bg-[#171B18] border border-[#292F2B]'
                   : 'hover:text-white hover:bg-[#111412]'
@@ -106,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handleNavClick('planner')}
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+              className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                 activeTab === 'planner'
                   ? 'text-white bg-[#171B18] border border-[#292F2B]'
                   : 'hover:text-white hover:bg-[#111412]'
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handleNavClick('flashcards')}
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+              className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                 activeTab === 'flashcards'
                   ? 'text-white bg-[#171B18] border border-[#292F2B]'
                   : 'hover:text-white hover:bg-[#111412]'
@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => handleNavClick('timer')}
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+              className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                 activeTab === 'timer'
                   ? 'text-white bg-[#171B18] border border-[#292F2B]'
                   : 'hover:text-white hover:bg-[#111412]'
@@ -144,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavClick('dashboard')}
-                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+                  className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                     activeTab === 'dashboard'
                       ? 'text-white bg-[#171B18] border border-[#292F2B]'
                       : 'hover:text-white hover:bg-[#111412]'
@@ -156,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavClick('notes')}
-                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+                  className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                     activeTab === 'notes'
                       ? 'text-white bg-[#171B18] border border-[#292F2B]'
                       : 'hover:text-white hover:bg-[#111412]'
@@ -168,7 +168,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavClick('subjects')}
-                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+                  className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                     activeTab === 'subjects'
                       ? 'text-white bg-[#171B18] border border-[#292F2B]'
                       : 'hover:text-white hover:bg-[#111412]'
@@ -181,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => handleNavClick('notes')}
-                className={`px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
+                className={`whitespace-nowrap px-2.5 xl:px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer ${
                   activeTab === 'notes'
                     ? 'text-white bg-[#171B18] border border-[#292F2B]'
                     : 'hover:text-white hover:bg-[#111412]'
@@ -201,9 +201,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="font-medium max-w-[130px] truncate">
                     {profile?.display_name || user.email?.split('@')[0]}
                   </span>
-                  {!isConfigured && (
-                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono">
-                      Demo
+                  {isDemoMode && (
+                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                      Test-Modus
                     </span>
                   )}
                 </div>
@@ -221,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={openAuthModal}
+                  onClick={() => openAuthModal('login')}
                   className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#A4AAA5] hover:text-white transition-colors cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5" />
@@ -230,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   type="button"
-                  onClick={openAuthModal}
+                  onClick={() => openAuthModal('signup')}
                   className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold text-[#090B0A] bg-[#C5F82A] hover:bg-white rounded-xl shadow-lg shadow-[#C5F82A]/20 transition-all duration-300 cursor-pointer"
                 >
                   <span className="hidden xs:inline">Kostenlos starten</span>
@@ -373,9 +373,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    openAuthModal();
+                    openAuthModal('signup');
                   }}
-                  className="w-full py-3 rounded-xl bg-[#C5F82A] text-[#090B0A] font-bold text-sm text-center"
+                  className="w-full py-3 rounded-xl bg-[#C5F82A] text-[#090B0A] font-bold text-sm text-center cursor-pointer"
                 >
                   Jetzt kostenlos starten
                 </button>
@@ -383,9 +383,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    openAuthModal();
+                    openAuthModal('login');
                   }}
-                  className="w-full py-2.5 rounded-xl bg-[#171B18] text-white font-semibold text-xs text-center border border-[#292F2B]"
+                  className="w-full py-2.5 rounded-xl bg-[#171B18] text-white font-semibold text-xs text-center border border-[#292F2B] cursor-pointer"
                 >
                   Bereits ein Konto? Anmelden
                 </button>

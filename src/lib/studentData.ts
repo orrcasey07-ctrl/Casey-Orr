@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured, Subject, StudentNote, SavedGrade, Exam, StudyTask, FlashcardDeck, Flashcard, StudySession } from './supabase';
+import { shouldUseLocalData } from './authUtils';
 export type { Subject, StudentNote, SavedGrade, Exam, StudyTask, FlashcardDeck, Flashcard, StudySession };
 
 // Local storage helper
@@ -20,7 +21,7 @@ const setLocal = <T>(key: string, value: T): void => {
 // 1. SUBJECTS SERVICE
 // ==========================================
 export const getSubjects = async (userId: string): Promise<Subject[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const list = getLocal<Subject[]>(`notenpilot_subjects_${userId}`, [
       { id: 'sub-1', user_id: userId, name: 'Mathematik', target_grade: 2.0, color: '#123B70', created_at: new Date().toISOString() },
       { id: 'sub-2', user_id: userId, name: 'Deutsch', target_grade: 1.7, color: '#176B48', created_at: new Date().toISOString() },
@@ -40,7 +41,7 @@ export const getSubjects = async (userId: string): Promise<Subject[]> => {
 };
 
 export const createSubject = async (userId: string, name: string, targetGrade: number | null, color: string): Promise<Subject> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const subjects = await getSubjects(userId);
     const newSubject: Subject = {
       id: `sub-${Date.now()}`,
@@ -65,7 +66,7 @@ export const createSubject = async (userId: string, name: string, targetGrade: n
 };
 
 export const deleteSubject = async (userId: string, subjectId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const subjects = await getSubjects(userId);
     setLocal(`notenpilot_subjects_${userId}`, subjects.filter(s => s.id !== subjectId));
     return;
@@ -84,7 +85,7 @@ export const deleteSubject = async (userId: string, subjectId: string): Promise<
 // 2. STUDENT NOTES SERVICE
 // ==========================================
 export const getNotes = async (userId: string): Promise<StudentNote[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     return getLocal<StudentNote[]>(`notenpilot_notes_${userId}`, [
       {
         id: 'note-1',
@@ -127,7 +128,7 @@ export const createNote = async (
   subjectId: string | null,
   isPinned = false
 ): Promise<StudentNote> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const notes = await getNotes(userId);
     const newNote: StudentNote = {
       id: `note-${Date.now()}`,
@@ -165,7 +166,7 @@ export const updateNote = async (
   noteId: string,
   updates: Partial<Pick<StudentNote, 'title' | 'content' | 'subject_id' | 'is_pinned'>>
 ): Promise<StudentNote> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const notes = await getNotes(userId);
     const updated = notes.map(n => n.id === noteId ? { ...n, ...updates, updated_at: new Date().toISOString() } : n);
     setLocal(`notenpilot_notes_${userId}`, updated);
@@ -185,7 +186,7 @@ export const updateNote = async (
 };
 
 export const deleteNote = async (userId: string, noteId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const notes = await getNotes(userId);
     setLocal(`notenpilot_notes_${userId}`, notes.filter(n => n.id !== noteId));
     return;
@@ -204,7 +205,7 @@ export const deleteNote = async (userId: string, noteId: string): Promise<void> 
 // 3. SAVED GRADE CALCULATIONS SERVICE
 // ==========================================
 export const getSavedGrades = async (userId: string): Promise<SavedGrade[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     return getLocal<SavedGrade[]>(`notenpilot_saved_grades_${userId}`, [
       {
         id: 'grade-1',
@@ -241,7 +242,7 @@ export const saveGradeCalculation = async (
   isWeighted: boolean,
   breakdown: Array<{ subject: string; grade: number; weight: number }>
 ): Promise<SavedGrade> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const list = await getSavedGrades(userId);
     const newEntry: SavedGrade = {
       id: `grade-${Date.now()}`,
@@ -275,7 +276,7 @@ export const saveGradeCalculation = async (
 };
 
 export const deleteSavedGrade = async (userId: string, gradeId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const list = await getSavedGrades(userId);
     setLocal(`notenpilot_saved_grades_${userId}`, list.filter(g => g.id !== gradeId));
     return;
@@ -294,7 +295,7 @@ export const deleteSavedGrade = async (userId: string, gradeId: string): Promise
 // 4. EXAMS & STUDY TASKS SERVICE
 // ==========================================
 export const getExams = async (userId: string): Promise<Exam[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const today = new Date();
     const inFiveDays = new Date(today.getTime() + 86400000 * 5).toISOString().split('T')[0];
     const inTwelveDays = new Date(today.getTime() + 86400000 * 12).toISOString().split('T')[0];
@@ -341,7 +342,7 @@ export const createExam = async (
   weight: number,
   description = ''
 ): Promise<Exam> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const exams = await getExams(userId);
     const newExam: Exam = {
       id: `exam-${Date.now()}`,
@@ -375,7 +376,7 @@ export const createExam = async (
 };
 
 export const deleteExam = async (userId: string, examId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const exams = await getExams(userId);
     setLocal(`notenpilot_exams_${userId}`, exams.filter(e => e.id !== examId));
     return;
@@ -391,7 +392,7 @@ export const deleteExam = async (userId: string, examId: string): Promise<void> 
 };
 
 export const getStudyTasks = async (userId: string): Promise<StudyTask[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const today = new Date().toISOString().split('T')[0];
     return getLocal<StudyTask[]>(`notenpilot_tasks_${userId}`, [
       { id: 'task-1', user_id: userId, exam_id: 'exam-1', title: 'Übungsaufgaben Buch S. 84 Nr. 1-6 lösen', due_date: today, is_completed: false, created_at: new Date().toISOString() },
@@ -417,7 +418,7 @@ export const createStudyTask = async (
   examId: string | null,
   dueDate: string | null
 ): Promise<StudyTask> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const tasks = await getStudyTasks(userId);
     const newTask: StudyTask = {
       id: `task-${Date.now()}`,
@@ -449,7 +450,7 @@ export const createStudyTask = async (
 };
 
 export const toggleStudyTask = async (userId: string, taskId: string, isCompleted: boolean): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const tasks = await getStudyTasks(userId);
     setLocal(`notenpilot_tasks_${userId}`, tasks.map(t => t.id === taskId ? { ...t, is_completed: isCompleted } : t));
     return;
@@ -465,7 +466,7 @@ export const toggleStudyTask = async (userId: string, taskId: string, isComplete
 };
 
 export const deleteStudyTask = async (userId: string, taskId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const tasks = await getStudyTasks(userId);
     setLocal(`notenpilot_tasks_${userId}`, tasks.filter(t => t.id !== taskId));
     return;
@@ -484,7 +485,7 @@ export const deleteStudyTask = async (userId: string, taskId: string): Promise<v
 // 5. FLASHCARDS SERVICE
 // ==========================================
 export const getDecks = async (userId: string): Promise<FlashcardDeck[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     return getLocal<FlashcardDeck[]>(`notenpilot_decks_${userId}`, [
       { id: 'deck-1', user_id: userId, subject_id: 'sub-3', title: 'Englisch-Vokabeln (Oberstufe C1)', description: 'Wichtige Redewendungen und Aufsatz-Vokabular', created_at: new Date().toISOString() },
       { id: 'deck-2', user_id: userId, subject_id: 'sub-1', title: 'Mathe Definitionen', description: 'Grenzwerte, Stetigkeit und Differenzierbarkeit', created_at: new Date().toISOString() },
@@ -502,7 +503,7 @@ export const getDecks = async (userId: string): Promise<FlashcardDeck[]> => {
 };
 
 export const createDeck = async (userId: string, title: string, description: string, subjectId: string | null): Promise<FlashcardDeck> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const decks = await getDecks(userId);
     const newDeck: FlashcardDeck = {
       id: `deck-${Date.now()}`,
@@ -527,7 +528,7 @@ export const createDeck = async (userId: string, title: string, description: str
 };
 
 export const deleteDeck = async (userId: string, deckId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const decks = await getDecks(userId);
     setLocal(`notenpilot_decks_${userId}`, decks.filter(d => d.id !== deckId));
     return;
@@ -543,7 +544,7 @@ export const deleteDeck = async (userId: string, deckId: string): Promise<void> 
 };
 
 export const getCards = async (userId: string, deckId: string): Promise<Flashcard[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const defaultCards: Flashcard[] = deckId === 'deck-1' ? [
       { id: 'card-1', user_id: userId, deck_id: 'deck-1', question: 'Was bedeutet "ubiquitous"?', answer: 'Allgegenwärtig / überall vorkommend (omnipresent).', status: 'learning', created_at: new Date().toISOString() },
       { id: 'card-2', user_id: userId, deck_id: 'deck-1', question: 'Was bedeutet "to mitigate"?', answer: 'Mildern, abschwächen, lindern.', status: 'mastered', created_at: new Date().toISOString() },
@@ -564,7 +565,7 @@ export const getCards = async (userId: string, deckId: string): Promise<Flashcar
 };
 
 export const createCard = async (userId: string, deckId: string, question: string, answer: string): Promise<Flashcard> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const cards = await getCards(userId, deckId);
     const newCard: Flashcard = {
       id: `card-${Date.now()}`,
@@ -590,7 +591,7 @@ export const createCard = async (userId: string, deckId: string, question: strin
 };
 
 export const updateCardStatus = async (userId: string, cardId: string, status: 'learning' | 'mastered', deckId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const cards = await getCards(userId, deckId);
     setLocal(`notenpilot_cards_${userId}_${deckId}`, cards.map(c => c.id === cardId ? { ...c, status } : c));
     return;
@@ -606,7 +607,7 @@ export const updateCardStatus = async (userId: string, cardId: string, status: '
 };
 
 export const deleteCard = async (userId: string, cardId: string, deckId: string): Promise<void> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const cards = await getCards(userId, deckId);
     setLocal(`notenpilot_cards_${userId}_${deckId}`, cards.filter(c => c.id !== cardId));
     return;
@@ -625,7 +626,7 @@ export const deleteCard = async (userId: string, cardId: string, deckId: string)
 // 6. STUDY SESSIONS SERVICE (FOCUS TIMER)
 // ==========================================
 export const logStudySession = async (userId: string, durationMinutes: number, sessionType = 'pomodoro'): Promise<StudySession> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     const sessions = getLocal<StudySession[]>(`notenpilot_sessions_${userId}`, []);
     const newSession: StudySession = {
       id: `session-${Date.now()}`,
@@ -649,7 +650,7 @@ export const logStudySession = async (userId: string, durationMinutes: number, s
 };
 
 export const getStudySessions = async (userId: string): Promise<StudySession[]> => {
-  if (!isSupabaseConfigured) {
+  if (shouldUseLocalData(isSupabaseConfigured, userId)) {
     return getLocal<StudySession[]>(`notenpilot_sessions_${userId}`, [
       { id: 's-1', user_id: userId, duration_minutes: 25, session_type: 'pomodoro', created_at: new Date(Date.now() - 3600000 * 2).toISOString() },
       { id: 's-2', user_id: userId, duration_minutes: 25, session_type: 'pomodoro', created_at: new Date(Date.now() - 3600000 * 4).toISOString() },
