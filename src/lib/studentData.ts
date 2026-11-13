@@ -101,7 +101,7 @@ export const getNotes = async (userId: string): Promise<StudentNote[]> => {
         user_id: userId,
         subject_id: 'sub-2',
         title: 'Gedichtanalyse Epochenmerkmale',
-        content: 'Romantik (ca. 1795–1848):\n- Motive: Sehnsucht, Wanderschaft, Nacht, Naturverbundenheit, das Blaue Blume Symbol.\n- Sprache: Musikalisch, volksliedhaft.',
+        content: 'Romantik (ca. 1795–1848):\n- Motive: Sehnsucht, Wanderschaft, Nacht, Naturverbundenheit, die „Blaue Blume“.\n- Sprache: Musikalisch, volksliedhaft.',
         is_pinned: false,
         created_at: new Date(Date.now() - 86400000).toISOString(),
         updated_at: new Date(Date.now() - 86400000).toISOString(),
@@ -395,7 +395,7 @@ export const getStudyTasks = async (userId: string): Promise<StudyTask[]> => {
     const today = new Date().toISOString().split('T')[0];
     return getLocal<StudyTask[]>(`notenpilot_tasks_${userId}`, [
       { id: 'task-1', user_id: userId, exam_id: 'exam-1', title: 'Übungsaufgaben Buch S. 84 Nr. 1-6 lösen', due_date: today, is_completed: false, created_at: new Date().toISOString() },
-      { id: 'task-2', user_id: userId, exam_id: 'exam-1', title: 'Spickzettel für Formeln schreiben', due_date: today, is_completed: true, created_at: new Date().toISOString() },
+      { id: 'task-2', user_id: userId, exam_id: 'exam-1', title: 'Formelübersicht (Lernzettel) schreiben', due_date: today, is_completed: true, created_at: new Date().toISOString() },
       { id: 'task-3', user_id: userId, exam_id: 'exam-2', title: 'Musteraufsatz Einleitung üben', due_date: null, is_completed: false, created_at: new Date().toISOString() },
     ]);
   }
@@ -486,7 +486,7 @@ export const deleteStudyTask = async (userId: string, taskId: string): Promise<v
 export const getDecks = async (userId: string): Promise<FlashcardDeck[]> => {
   if (!isSupabaseConfigured) {
     return getLocal<FlashcardDeck[]>(`notenpilot_decks_${userId}`, [
-      { id: 'deck-1', user_id: userId, subject_id: 'sub-3', title: 'Englisch Vokabeln (Advanced C1)', description: 'Wichtige Idioms und essay vocabulary', created_at: new Date().toISOString() },
+      { id: 'deck-1', user_id: userId, subject_id: 'sub-3', title: 'Englisch-Vokabeln (Oberstufe C1)', description: 'Wichtige Redewendungen und Aufsatz-Vokabular', created_at: new Date().toISOString() },
       { id: 'deck-2', user_id: userId, subject_id: 'sub-1', title: 'Mathe Definitionen', description: 'Grenzwerte, Stetigkeit und Differenzierbarkeit', created_at: new Date().toISOString() },
     ]);
   }

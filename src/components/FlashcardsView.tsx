@@ -208,10 +208,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({ onRequireAuth })
           <Layers className="w-8 h-8" />
         </div>
         <h2 className="text-3xl font-black text-white mb-3">
-          Digitale Karteikarten & Spaced Repetition
+          Digitale Karteikarten &amp; Lernbox
         </h2>
         <p className="text-[#A4AAA5] max-w-md mx-auto mb-8 text-sm sm:text-base leading-relaxed">
-          Erstelle eigene Vokabel- und Definitionen-Decks mit interaktivem Flip-Modus und tracke deinen Lernfortschritt direkt in der Cloud.
+          Erstelle eigene Vokabel- und Definitionen-Decks mit interaktiven Lernkarten und verfolge deinen Lernfortschritt direkt in der Cloud.
         </p>
         <button
           onClick={onRequireAuth}

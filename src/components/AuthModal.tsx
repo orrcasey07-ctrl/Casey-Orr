@@ -41,6 +41,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
 
   if (!isOpen) return null;
 
+const translateAuthError = (msg: string): string => {
+  const lower = msg.toLowerCase();
+  if (lower.includes('invalid login credentials')) {
+    return 'Ungültige E-Mail-Adresse oder falsches Passwort.';
+  }
+  if (lower.includes('email not confirmed')) {
+    return 'Bitte bestätige zuerst deine E-Mail-Adresse über den Link in deinem Postfach.';
+  }
+  if (lower.includes('user already registered')) {
+    return 'Für diese E-Mail-Adresse existiert bereits ein Konto.';
+  }
+  if (lower.includes('password should be at least')) {
+    return 'Das Passwort muss mindestens 6 Zeichen lang sein.';
+  }
+  if (lower.includes('unable to validate email address') || lower.includes('invalid email')) {
+    return 'Bitte gib eine gültige E-Mail-Adresse ein.';
+  }
+  if (lower.includes('rate limit') || lower.includes('too many requests')) {
+    return 'Zu viele Anfragen in kurzer Zeit. Bitte warte einen Moment und versuche es erneut.';
+  }
+  return msg;
+};
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -51,9 +74,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
       if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) {
-          setErrorMsg(error.message === 'Invalid login credentials' 
-            ? 'Ungültige E-Mail-Adresse oder falsches Passwort.' 
-            : error.message);
+          setErrorMsg(translateAuthError(error.message));
         } else {
           onClose();
         }
@@ -65,7 +86,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
         }
         const { error, message } = await signUp(email, password, displayName);
         if (error) {
-          setErrorMsg(error.message);
+          setErrorMsg(translateAuthError(error.message));
         } else {
           setSuccessMsg(message || 'Registrierung erfolgreich!');
           setTimeout(() => {
@@ -75,7 +96,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
       } else if (mode === 'forgot') {
         const { error } = await resetPassword(email);
         if (error) {
-          setErrorMsg(error.message);
+          setErrorMsg(translateAuthError(error.message));
         } else {
           setSuccessMsg('Link zum Zurücksetzen des Passworts wurde per E-Mail versendet.');
         }
@@ -231,7 +252,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 <span>
                   {mode === 'login' && 'Jetzt anmelden'}
                   {mode === 'signup' && 'Konto kostenlos anlegen'}
-                  {mode === 'forgot' && 'Reset-Link anfordern'}
+                  {mode === 'forgot' && 'Link zum Zurücksetzen anfordern'}
                 </span>
                 <ArrowRight className="w-4 h-4" />
               </>
@@ -270,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 }}
                 className="text-[#C5F82A] font-semibold hover:underline cursor-pointer"
               >
-                Zum Login
+                Zur Anmeldung
               </button>
             </p>
           )}
@@ -285,7 +306,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               }}
               className="text-[#C5F82A] font-semibold hover:underline cursor-pointer"
             >
-              Zurück zum Login
+              Zurück zur Anmeldung
             </button>
           )}
         </div>

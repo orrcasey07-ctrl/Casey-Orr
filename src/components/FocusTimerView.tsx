@@ -281,7 +281,7 @@ export const FocusTimerView: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={handleToggleRunning}
             className={`flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-base shadow-xl transition-all cursor-pointer ${
               isRunning
                 ? 'bg-[#171B18] hover:bg-[#202521] text-amber-400 border border-amber-400/40 shadow-amber-400/10'
@@ -328,7 +328,7 @@ export const FocusTimerView: React.FC = () => {
           <div className="text-center p-3.5 rounded-xl bg-[#171B18] border border-[#292F2B]">
             <div className="text-xl font-black text-white flex items-center justify-center gap-1.5 font-mono">
               <Clock className="w-4 h-4 text-[#C5F82A]" />
-              {totalMinutesToday} min
+              {totalMinutesToday} Min.
             </div>
             <div className="text-[11px] text-[#A4AAA5] mt-0.5">
               Heute fokussiert gelernt

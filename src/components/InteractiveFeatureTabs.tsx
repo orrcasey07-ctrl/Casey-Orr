@@ -160,7 +160,7 @@ export const InteractiveFeatureTabs: React.FC<InteractiveFeatureTabsProps> = ({ 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
             <div className="lg:col-span-6 space-y-4">
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#C5F82A]">
-                02 · CLOUD-NOTIZEN MIT DEBOUNCED AUTOSAVE
+                02 · CLOUD-NOTIZEN MIT AUTOMATISCHER SPEICHERUNG
               </span>
               <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
                 Unterrichtsnotizen & Formelsammlungen zentral organisieren
@@ -223,10 +223,10 @@ export const InteractiveFeatureTabs: React.FC<InteractiveFeatureTabsProps> = ({ 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fadeIn">
             <div className="lg:col-span-6 space-y-4">
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#C5F82A]">
-                03 · EXAM PLANNER, FLASHCARDS & TIMER
+                03 · KLAUSURENPLAN, KARTEIKARTEN &amp; TIMER
               </span>
               <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                Lernplan, interaktive Karteikarten & Pomodoro Fokus-Timer
+                Lernplan, interaktive Karteikarten &amp; Pomodoro Fokus-Timer
               </h3>
               <p className="text-sm text-[#A4AAA5] leading-relaxed">
                 Plane Klausuren mit automatischem Tages-Countdown, erstelle digitale Karteikarten mit 3D-Flip-Modus und lerne in wissenschaftlich bewährten 25-Minuten-Intervallen mit akustischem Signal.
@@ -242,7 +242,7 @@ export const InteractiveFeatureTabs: React.FC<InteractiveFeatureTabsProps> = ({ 
                 </li>
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-[#C5F82A] shrink-0" />
-                  <span>Integrierter Pomodoro-Timer mit Web Audio Chime</span>
+                  <span>Integrierter Pomodoro-Timer mit akustischem Signal</span>
                 </li>
               </ul>
               <div className="pt-4 flex flex-wrap gap-2.5">

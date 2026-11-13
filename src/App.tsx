@@ -536,7 +536,7 @@ const AppContent: React.FC = () => {
                       </div>
                       <h3 className="text-xl font-bold text-white mb-2">6. Lernorganisation &amp; Timer</h3>
                       <p className="text-xs sm:text-sm text-[#A4AAA5] leading-relaxed">
-                        Verbinde Klausur-Countdowns mit interaktiven Karteikarten-Flips und dem 25-Minuten Pomodoro-Fokustimer mit Web Audio Signal.
+                        Verbinde Klausur-Countdowns mit interaktiven Karteikarten und dem 25-Minuten-Pomodoro-Fokustimer mit akustischem Signal.
                       </p>
                     </div>
                     <button
@@ -594,7 +594,7 @@ const AppContent: React.FC = () => {
                       <div className="p-4 rounded-2xl bg-[#111412] border border-[#292F2B]">
                         <h4 className="font-bold text-white text-sm mb-1">Klare Benutzeroberfläche</h4>
                         <p className="text-xs text-[#A4AAA5] leading-relaxed">
-                          Fokusiertes GRAINZ-Monochrom-Design ohne störende Ablenkungen.
+                          Fokussiertes, dunkles Design ohne störende Ablenkungen.
                         </p>
                       </div>
                     </div>
@@ -685,7 +685,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="w-4 h-4 text-[#C5F82A] shrink-0" />
-                      <span className="text-white">Lernnotizen mit Debounced Cloud-Save</span>
+                      <span className="text-white">Lernnotizen mit automatischer Cloud-Speicherung</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="w-4 h-4 text-[#C5F82A] shrink-0" />
